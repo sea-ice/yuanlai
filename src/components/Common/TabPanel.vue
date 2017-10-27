@@ -1,10 +1,12 @@
 <template>
-  <el-tabs v-model="activeName" @tab-click="handleTabClick">
+  <el-tabs v-model="active" @tab-click="handleTabClick">
     <el-tab-pane
       :label="tab.label"
       :name="tab.name"
       v-for="tab in tabs"
-    >{{ tab.text }}</el-tab-pane>
+    >
+      <slot :name="tab.name"></slot>
+    </el-tab-pane>
   </el-tabs>
 </template>
 
@@ -12,6 +14,10 @@
   export default {
     name: 'TabPanel',
     props: {
+      activeName: {
+        type: String,
+        default: ''
+      },
       tabs: {
         type: Array,
         default () {
@@ -21,7 +27,7 @@
     },
     data () {
       return {
-        activeName: tabs[0] && tabs[0].name
+        active: this.activeName
       }
     },
     methods: {

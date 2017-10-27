@@ -21,7 +21,11 @@
 
 <style scoped lang="sass">
   header
+    position: fixed
     display: flex
+    width: 100%
+    top: 0px
+    z-index: 1
   .logo-wrapper
     width: 60px
     height: 60px

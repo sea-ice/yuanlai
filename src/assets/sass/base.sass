@@ -3,3 +3,34 @@ html, body, #app
 
 body
   background-color: #F2F2F2
+
+.tab
+  padding: 0px 25px 25px
+
+.tab > div + div
+  margin-top: 25px
+
+.container + .container
+  margin-top: 15px
+
+.el-tag + .el-tag
+  margin-left: 10px
+
+.el-select, .el-date-editor.el-input
+  width: 100px
+
+.tabs-wrapper
+  position: relative
+  height: 100%
+  background-color: #fff
+  overflow: auto
+  .el-tabs__header
+    position: absolute
+    width: 100%
+    top: 0px
+    left: 0px
+    margin: 0
+    z-index: 1
+    background-color: #fff
+  .el-tabs__content
+    margin-top: 67px

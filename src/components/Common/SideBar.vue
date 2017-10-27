@@ -77,6 +77,7 @@
     width: 60px
     bottom: 0px
     background-color: #DCC7C7
+    z-index: 1
     li
       height: 60px
       text-align: center

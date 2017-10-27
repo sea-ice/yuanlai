@@ -4,8 +4,8 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
-
 import '@/assets/sass/reset.sass'
+import 'element-ui/lib/theme-default/index.css'
 import '@/assets/sass/base.sass'
 import '@/assets/css/font-awesome.min.css'
 

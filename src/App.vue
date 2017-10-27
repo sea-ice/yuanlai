@@ -37,6 +37,6 @@ export default {
     -webkit-box-sizing: border-box
     -moz-box-sizing: border-box
     box-sizing: border-box
-    padding: 15px 15px 15px 75px
-    height: calc(100% - 60px)
+    padding: 75px 15px 15px 75px
+    overflow: auto
 </style>
