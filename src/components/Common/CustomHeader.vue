@@ -25,7 +25,7 @@
     display: flex
     width: 100%
     top: 0px
-    z-index: 1
+    z-index: 1000
   .logo-wrapper
     width: 60px
     height: 60px

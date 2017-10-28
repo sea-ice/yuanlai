@@ -1,5 +1,5 @@
 <template>
-  <div class="tabs-wrapper">
+  <div class="tabs-wrapper" ref="tabsWrapper">
     <tab-panel
       :tabs="userTabs"
       :activeName="activeName"
@@ -8,7 +8,7 @@
       <div class="tab" slot="lifecycle">
         <card title="新增用户">
           <date-control title="时限" slot="widget"></date-control>
-          <p>新增用户</p>
+          <div class="large-chart" id="add-user-chart"></div>
         </card>
         <card title="用户总数">
           <p>用户总数</p>
@@ -31,39 +31,98 @@
           <div>
             <div class="pie-wrapper">
               <h2>学历</h2>
-              <div class="pie"></div>
+              <div class="pie" id="education-statistics"></div>
             </div>
           </div>
           <div>
             <div class="pie-wrapper">
               <h2>性别</h2>
-              <div class="pie"></div>
+              <div class="pie" id="gender-statistics"></div>
             </div>
           </div>
           <div>
             <div class="pie-wrapper">
               <h2>方向</h2>
-              <div class="pie"></div>
+              <div class="pie" id="hobby-statistics"></div>
             </div>
           </div>
         </div>
         <card title="位置分布">
-          <p>map</p>
+          <div class="map-wrapper">
+            <div id="china-map"></div>
+            <div class="province-data">
+              <h2>陕西省</h2>
+              <ul class="provice-info">
+                <li>
+                  <h3>用户总数</h3>
+                  <p>54,233</p>
+                  <p>
+                    <span>10%</span>
+                    同比上周
+                  </p>
+                </li>
+                <li>
+                  <h3>新增用户</h3>
+                  <p>323</p>
+                  <p>
+                    <span>10%</span>
+                    同比上周
+                  </p>
+                </li>
+                <li>
+                  <h3>新增帖子</h3>
+                  <p>3232</p>
+                  <p>
+                    <span>10%</span>
+                    同比上周
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
         </card>
       </div>
       <div class="tab" slot="usage">
         <card title="标签活跃比">
-          <p>hello</p>
+          <div class="content-wrapper">
+            <div class="total-count">
+              <h2 class="type-name">Python</h2>
+              <p>10203次</p>
+            </div>
+            <div class="arc" id="day-count-arc"></div>
+            <div class="arc" id="week-count-arc"></div>
+            <div class="arc" id="month-count-arc"></div>
+          </div>
         </card>
         <div class="card-columns">
           <section>
             <card title="求助帖活跃比">
-              <p>求助帖活跃比</p>
+              <div class="content-wrapper">
+                <div class="total-count">
+                  <h2 class="type-name">求助帖</h2>
+                  <p>10203次</p>
+                </div>
+                <ul class="active-ratio">
+                  <li><p>日活跃比：<span>22%</span></p></li>
+                  <li><p>周活跃比：<span>22%</span></p></li>
+                  <li><p>月活跃比：<span>22%</span></p></li>
+                </ul>
+              </div>
             </card>
           </section>
           <section>
             <card title="分享帖活跃比">
-              <p>分享帖活跃比</p>
+              <div class="content-wrapper">
+                <div class="total-count">
+                  <h2 class="type-name">分享帖</h2>
+                  <p>10203次</p>
+                </div>
+                <ul class="active-ratio">
+                  <li><p>日活跃比：<span>22%</span></p></li>
+                  <li><p>周活跃比：<span>22%</span></p></li>
+                  <li><p>月活跃比：<span>22%</span></p></li>
+                </ul>
+              </div>
             </card>
           </section>
         </div>
@@ -88,12 +147,77 @@
   import TabPanel from '@/components/Common/TabPanel'
   import Card from '@/components/Common/Card'
   import DateControl from '@/components/Common/DateControl'
+  import {drawLine, drawPie, drawChinaMap, drawArc} from '@/assets/js/charts'
   export default {
     name: 'UserBehavior',
     components: {
       TabPanel,
       Card,
       DateControl
+    },
+    mounted () {
+      // 新增用户数
+      drawLine(document.getElementById('add-user-chart'), {
+        data: ['2017-10-15', '2017-10-16', '2017-10-17', '2017-10-18', '2017-10-19', '2017-10-20', '2017-10-21']
+      }, {
+        name: '单日新增用户数',
+        data: [2123, 2029, 7812, 3829, 9923, 9231, 9912]
+      })
+      const tabsWidth = this.$refs.tabsWrapper.clientWidth
+      const TABS_PADDING = 50 + 4
+      let pieWidth = (tabsWidth - TABS_PADDING) / 3
+      ;[].forEach.call(document.getElementsByClassName('pie'), e => {
+        e.style.width = e.style.height = `${pieWidth}px`
+      })
+      // 用户属性：学历
+      drawPie(document.getElementById('education-statistics'), [{
+        name: '博士',
+        val: 120
+      }, {
+        name: '高中以下',
+        val: 1340
+      }, {
+        name: '高中',
+        val: 2523
+      }, {
+        name: '硕士',
+        val: 4372
+      }, {
+        name: '本科',
+        val: 5231
+      }])
+
+      drawPie(document.getElementById('gender-statistics'), [{
+        name: '男',
+        val: 1200
+      }, {
+        name: '女',
+        val: 1340
+      }])
+
+      drawPie(document.getElementById('hobby-statistics'), [{
+        name: 'HTML/CSS',
+        val: 1200
+      }, {
+        name: 'Java',
+        val: 3404
+      }, {
+        name: 'C++',
+        val: 2523
+      }, {
+        name: 'JavaScript',
+        val: 4372
+      }, {
+        name: 'Python',
+        val: 5231
+      }])
+
+      //
+      drawChinaMap(document.getElementById('china-map'))
+
+      drawArc(document.getElementById('day-count-arc'), '日活跃比', 40)
+      drawArc(document.getElementById('week-count-arc'), '周活跃比', 60)
+      drawArc(document.getElementById('month-count-arc'), '月活跃比', 80)
     },
     data () {
       return {
@@ -123,11 +247,14 @@
 </script>
 
 <style scoped lang="sass">
+  h2
+    font-weight: bold
+    text-align: center
   .card-columns
     display: flex
     justify-content: space-between
     section
-      flex-grow: 1
+      width: calc(50% - 12.5px)
     section + section
       margin-left: 25px
   .columns-wrapper
@@ -139,14 +266,13 @@
     border: 1px solid rgb(209, 219, 229)
     h2
       line-height: 50px
-      text-align: center
     & > div
       position: relative
       width: 33.33333333%
       &:before
         content: ''
         display: block
-        padding-top: 100%
+        padding-top: calc(100% + 50px)
       & > div
         position: absolute
         width: 100%
@@ -160,4 +286,65 @@
       top: 10%
       right: 0
       background-color: rgb(209, 219, 229)
+  .large-chart
+    width: 800px
+    height: 400px
+    margin: 0 auto
+
+  .pie-wrapper
+    height: 100%
+    .pie
+      width: 100%
+      height: calc(100% - 50px)
+
+  .map-wrapper
+    display: flex
+    align-items: center
+    width: 850px
+    margin: 0 auto
+    #china-map
+      width: 550px
+      height: 550px
+    .province-data
+      width: 300px
+
+  .provice-info
+    li
+      margin-top: 40px
+      h3
+        font-size: 14px
+        line-height: 16px
+      p:first-of-type
+        font-size: 24px
+        font-weight: bold
+        line-height: 40px
+      p:last-of-type
+        font-size: 14px
+        line-height: 16px
+
+  .content-wrapper
+    display: flex
+    justify-content: space-between
+  .total-count
+    width: 300px
+    .type-name
+      line-height: 100px
+      font-size: 40px
+      color: #666
+      font-weight: bold
+      text-align: left
+    p
+      line-height: 100px
+      font-size: 50px
+      font-weight: bold
+  .active-ratio
+    width: 200px
+    padding-top: 40px
+    li
+      line-height: 40px
+      font-size: 24px
+
+  .arc
+    width: 200px
+    height: 200px
 </style>
