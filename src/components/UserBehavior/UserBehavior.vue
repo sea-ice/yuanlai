@@ -7,7 +7,20 @@
     >
       <div class="tab" slot="lifecycle">
         <card title="新增用户">
-          <date-control title="时限" slot="widget"></date-control>
+          <!--<date-control title="时限" slot="widget"></date-control>-->
+          <el-select
+            v-model="addUserVal"
+            placeholder="请选择"
+            slot="widget"
+            size="mini"
+          >
+            <el-option
+              v-for="item in addUserOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
           <div class="large-chart" id="add-user-chart"></div>
         </card>
         <card title="用户总数">
@@ -16,12 +29,14 @@
         <div class="card-columns">
           <section>
             <card title="活跃用户">
-              <p>活跃用户</p>
+              <!--<date-control title="时限" slot="widget"></date-control>-->
+              <div class="small-chart" id="active-user-chart"></div>
             </card>
           </section>
           <section>
             <card title="留存用户">
-              <p>留存用户</p>
+              <!--<date-control title="时限" slot="widget"></date-control>-->
+              <div class="small-chart" id="remain-user-chart"></div>
             </card>
           </section>
         </div>
@@ -129,7 +144,7 @@
         <div class="card-columns">
           <section>
             <card title="互动数">
-              <p>求助帖活跃比</p>
+              <div class="small-chart" id="interact-chart"></div>
             </card>
           </section>
           <section>
@@ -158,6 +173,18 @@
     mounted () {
       // 新增用户数
       drawLine(document.getElementById('add-user-chart'), {
+        data: ['2017-10-15', '2017-10-16', '2017-10-17', '2017-10-18', '2017-10-19', '2017-10-20', '2017-10-21']
+      }, {
+        name: '单日新增用户数',
+        data: [2123, 2029, 7812, 3829, 9923, 9231, 9912]
+      })
+      drawLine(document.getElementById('active-user-chart'), {
+        data: ['2017-10-15', '2017-10-16', '2017-10-17', '2017-10-18', '2017-10-19', '2017-10-20', '2017-10-21']
+      }, {
+        name: '单日新增用户数',
+        data: [2123, 2029, 7812, 3829, 9923, 9231, 9912]
+      })
+      drawLine(document.getElementById('remain-user-chart'), {
         data: ['2017-10-15', '2017-10-16', '2017-10-17', '2017-10-18', '2017-10-19', '2017-10-20', '2017-10-21']
       }, {
         name: '单日新增用户数',
@@ -235,7 +262,18 @@
             name: 'usage'
           }
         ],
-        activeName: 'lifecycle'
+        activeName: 'lifecycle',
+        addUserVal: '',
+        addUserOptions: [{
+          label: '最近一周',
+          value: 'week'
+        }, {
+          label: '最近15天',
+          value: 'halfMonth'
+        }, {
+          label: '最近30天',
+          value: 'month'
+        }]
       }
     },
     methods: {
@@ -289,6 +327,10 @@
   .large-chart
     width: 800px
     height: 400px
+    margin: 0 auto
+  .small-chart
+    width: 450px
+    height: 300px
     margin: 0 auto
 
   .pie-wrapper

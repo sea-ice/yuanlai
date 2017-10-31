@@ -54,6 +54,7 @@
 
 <script>
   import Container from '@/components/Common/Container'
+  import {getHotLabels, getHotPosts} from '@/api/homepage'
   export default {
     name: 'Homepage',
     components: {
@@ -61,6 +62,24 @@
     },
     mounted () {
       this.$refs.homepageContainer.parentNode.style.height = 'auto'
+      this._getHotLabels()
+      this._getHotPosts()
+    },
+    methods: {
+      _getHotLabels () {
+        getHotLabels().then(data => {
+          console.log(data)
+        }).catch(error => {
+          console.log(error)
+        })
+      },
+      _getHotPosts () {
+        getHotPosts().then(data => {
+          console.log(data)
+        }).catch(error => {
+          console.log(error)
+        })
+      }
     }
   }
 </script>
