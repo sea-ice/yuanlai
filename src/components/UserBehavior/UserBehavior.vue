@@ -77,7 +77,7 @@
                   </p>
                 </li>
                 <li>
-                  <h3>新增用户</h3>
+                  <h3>当天新增用户</h3>
                   <p>323</p>
                   <p>
                     <span>10%</span>
@@ -85,7 +85,7 @@
                   </p>
                 </li>
                 <li>
-                  <h3>新增帖子</h3>
+                  <h3>当天新增帖子</h3>
                   <p>3232</p>
                   <p>
                     <span>10%</span>
@@ -163,6 +163,7 @@
   import Card from '@/components/Common/Card'
   import DateControl from '@/components/Common/DateControl'
   import {drawLine, drawPie, drawChinaMap, drawArc} from '@/assets/js/charts'
+  import * as userBehaviorApi from '@/api/userBehavior'
   export default {
     name: 'UserBehavior',
     components: {
@@ -172,12 +173,8 @@
     },
     mounted () {
       // 新增用户数
-      drawLine(document.getElementById('add-user-chart'), {
-        data: ['2017-10-15', '2017-10-16', '2017-10-17', '2017-10-18', '2017-10-19', '2017-10-20', '2017-10-21']
-      }, {
-        name: '单日新增用户数',
-        data: [2123, 2029, 7812, 3829, 9923, 9231, 9912]
-      })
+      this._getAMonthNewUserNum()
+
       drawLine(document.getElementById('active-user-chart'), {
         data: ['2017-10-15', '2017-10-16', '2017-10-17', '2017-10-18', '2017-10-19', '2017-10-20', '2017-10-21']
       }, {
@@ -246,6 +243,13 @@
       drawArc(document.getElementById('week-count-arc'), '周活跃比', 60)
       drawArc(document.getElementById('month-count-arc'), '月活跃比', 80)
     },
+    watch: {
+      addUserVal (newVal, oldVal) {
+        if (newVal !== oldVal) {
+          this._drawMonthNewUser(+newVal)
+        }
+      }
+    },
     data () {
       return {
         userTabs: [
@@ -263,22 +267,46 @@
           }
         ],
         activeName: 'lifecycle',
-        addUserVal: '',
+        monthDate: [],
+        monthNewUsers: [],
+        addUserVal: '7',
         addUserOptions: [{
           label: '最近一周',
-          value: 'week'
+          value: '7'
         }, {
           label: '最近15天',
-          value: 'halfMonth'
+          value: '15'
         }, {
           label: '最近30天',
-          value: 'month'
+          value: '30'
         }]
       }
     },
     methods: {
       handleTabClick () {
 
+      },
+      _getAMonthNewUserNum () {
+        userBehaviorApi.getAMonthNewUserNum().then(data => {
+          console.log(data)
+          if (data.code === 0) {
+            this.monthDate = data.data.month.map(v => v.date)
+            this.monthNewUsers = data.data.month.map(v => v.num)
+            this._drawMonthNewUser(7)
+          }
+        }).catch(error => {
+          console.log(error)
+        })
+      },
+      _drawMonthNewUser (d) {
+        var xdata = this.monthDate.slice(0, d).reverse()
+        var ydata = this.monthNewUsers.slice(0, d).reverse()
+        drawLine(document.getElementById('add-user-chart'), {
+          data: xdata
+        }, {
+          name: '单日新增用户数',
+          data: ydata
+        })
       }
     }
   }

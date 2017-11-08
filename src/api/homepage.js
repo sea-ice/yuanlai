@@ -14,3 +14,10 @@ export function getHotPosts () {
       return Promise.resolve(response.data)
     })
 }
+
+export function getUserRealtimeData () {
+  return axios.get(`${URL_PREFIX}/admin/analysis/getUserRealtimeData`, {})
+    .then(response => {
+      return Promise.resolve(response.data)
+    })
+}

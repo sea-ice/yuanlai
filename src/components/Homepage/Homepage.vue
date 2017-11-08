@@ -5,19 +5,19 @@
         <ul class="realtime-data">
           <li>
             <h3>今日新增用户</h3>
-            <p>29199</p>
+            <p>{{ userInfo.newUserToday }}</p>
           </li>
           <li>
             <h3>累计用户数量</h3>
-            <p>8283712</p>
+            <p>{{ userInfo.totalUsers }}</p>
           </li>
           <li>
             <h3>今日新增帖子</h3>
-            <p>1234132</p>
+            <p>{{ userInfo.newArticlesToday }}</p>
           </li>
           <li>
             <h3>累计帖子数量</h3>
-            <p>12342</p>
+            <p>{{ userInfo.totalArticles }}</p>
           </li>
         </ul>
       </container>
@@ -27,24 +27,19 @@
     <main>
       <container title="热门标签 TOP10">
         <div class="tags-wrapper">
-          <el-tag>标签一</el-tag>
-          <el-tag type="gray">标签二</el-tag>
-          <el-tag type="primary">标签三</el-tag>
-          <el-tag type="success">标签四</el-tag>
-          <el-tag type="warning">标签五</el-tag>
-          <el-tag type="danger">标签六</el-tag>
+          <el-tag v-for="label in hotLabels" color="#E9FAF0">{{ label }}</el-tag>
         </div>
       </container>
       <container title="热门帖子 TOP10">
         <ul class="post-list">
-          <li>
-            <h3>论坛和帖子用英语怎么说?</h3>
-            <p class="post-content">一般用BBS当然书面上用FORUM意思完全一样了。帖子一般用NOTE：便条</p>
-            <!--<ul class="post-images">-->
-              <!--<li><img src="" alt=""></li>-->
-            <!--</ul>-->
-            <time class="post-time">2017-10-15 12:23:34</time>
-            <div class="bottom-border"></div>
+          <li v-for="(article, i) in hotArticles">
+            <h3>{{ article.title }}</h3>
+            <p class="post-content">{{ article.content }}</p>
+            <ul class="post-images" v-if="article.images.length">
+              <li v-for="image in article.images"><img :src="image" alt=""></li>
+            </ul>
+            <time class="post-time">{{ article.time }}</time>
+            <div class="bottom-border" v-if="i !== hotArticles.length - 1"></div>
           </li>
         </ul>
       </container>
@@ -54,7 +49,7 @@
 
 <script>
   import Container from '@/components/Common/Container'
-  import {getHotLabels, getHotPosts} from '@/api/homepage'
+  import {getHotLabels, getHotPosts, getUserRealtimeData} from '@/api/homepage'
   export default {
     name: 'Homepage',
     components: {
@@ -64,11 +59,21 @@
       this.$refs.homepageContainer.parentNode.style.height = 'auto'
       this._getHotLabels()
       this._getHotPosts()
+      this._getUserRealtimeData()
+    },
+    data () {
+      return {
+        hotLabels: [],
+        hotArticles: [],
+        userInfo: {}
+      }
     },
     methods: {
       _getHotLabels () {
         getHotLabels().then(data => {
-          console.log(data)
+          if (data.code === 0) {
+            this.hotLabels = data.data.labels
+          }
         }).catch(error => {
           console.log(error)
         })
@@ -76,6 +81,19 @@
       _getHotPosts () {
         getHotPosts().then(data => {
           console.log(data)
+          if (data.code === 0) {
+            this.hotArticles = data.data.articles
+          }
+        }).catch(error => {
+          console.log(error)
+        })
+      },
+      _getUserRealtimeData () {
+        getUserRealtimeData().then(data => {
+          console.log(data)
+          if (data.code === 0) {
+            this.userInfo = data.data
+          }
         }).catch(error => {
           console.log(error)
         })
