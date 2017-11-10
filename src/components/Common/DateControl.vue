@@ -2,42 +2,16 @@
   <div class="date-select-wrapper">
     <el-select
       size="mini"
-      v-model="range"
-      :placeholder="title"
+      v-model="d"
+      @change='handleDimensionChange'
     >
       <el-option
-        v-for="item in ranges"
+        v-for="item in dimensions"
         :key="item.value"
         :label="item.label"
         :value="item.value"
-        @change='handleRangeChange'>
-      </el-option>
+      ></el-option>
     </el-select>
-    <el-date-picker
-      v-show="range === 'week'"
-      size="mini"
-      v-model="week"
-      align="right"
-      type="week"
-      format="第 WW 周"
-      placeholder="选择周">
-    </el-date-picker>
-    <el-date-picker
-      v-show="range === 'month'"
-      size="mini"
-      v-model="month"
-      align="right"
-      type="month"
-      placeholder="选择月">
-    </el-date-picker>
-    <el-date-picker
-      v-show="range === 'year'"
-      size="mini"
-      v-model="year"
-      align="right"
-      type="year"
-      placeholder="选择年">
-    </el-date-picker>
   </div>
 </template>
 
@@ -45,32 +19,35 @@
   export default {
     name: 'DateControl',
     props: {
-      title: {
+      topic: {
         type: String,
         default: ''
+      },
+      statistics: {
+        type: Object,
+        default () {
+          return {}
+        }
       }
     },
     data () {
       return {
-        ranges: [{
-          label: '最近一周',
+        dimensions: [{
+          label: '按日统计',
+          value: 'day'
+        }, {
+          label: '按周统计',
           value: 'week'
         }, {
-          label: '月',
+          label: '按月统计',
           value: 'month'
-        }, {
-          label: '年',
-          value: 'year'
         }],
-        range: '',
-        year: '',
-        month: '',
-        week: ''
+        d: 'day'
       }
     },
     methods: {
-      handleRangeChange () {
-
+      handleDimensionChange () {
+        this.$emit('date-dimension-change', this.statistics, this.d, this.topic)
       }
     }
   }

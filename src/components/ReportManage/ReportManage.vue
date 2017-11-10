@@ -7,7 +7,7 @@
     >
       <div class="tab" slot="unhandled">
         <el-table
-          :data="reportList"
+          :data="unhandledList"
           border
           :height="tableHeight"
           style="width: 100%"
@@ -31,10 +31,10 @@
                 :open-delay="500"
               >
                 <div class="user-info">
-                  <p>用户名：{{ scope.row.reportedUser.name }}</p>
+                  <p>用户名：{{ scope.row.toUser.nickName }}</p>
                 </div>
                 <div slot="reference" class="avatar-wrapper">
-                  <i :style='{backgroundImage: `url(${scope.row.reportedUser.avatar})`}'></i>
+                  <i :style='{backgroundImage: `url(${scope.row.toUser.avator})`}'></i>
                 </div>
               </el-popover>
             </template>
@@ -51,10 +51,118 @@
                 :open-delay="500"
               >
                 <div class="user-info">
-                  <p>用户名：{{ scope.row.reportUser.name }}</p>
+                  <p>用户名：{{ scope.row.fromUser.nickName }}</p>
                 </div>
                 <div slot="reference" class="avatar-wrapper">
-                  <i :style='{backgroundImage: `url(${scope.row.reportUser.avatar})`}'></i>
+                  <i :style='{backgroundImage: `url(${scope.row.fromUser.avator})`}'></i>
+                </div>
+              </el-popover>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="type"
+            label="举报类型"
+            align="center"
+            width="100"
+          >
+          </el-table-column>
+          <el-table-column
+            prop="reason"
+            label="举报原因"
+            align="center"
+            width="100"
+          >
+          </el-table-column>
+          <el-table-column
+            label="反馈内容"
+            align="center"
+          >
+            <template slot-scope="scope">
+              <div class="content-wrapper">
+                <p class="feedback-content">{{ scope.row.content }}</p>
+                <a href="javascript:void(0)" @click.stop="showReportDetail(scope.row)">查看详情</a>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="time"
+            width="180"
+            align="center"
+            label="反馈时间"
+          >
+          </el-table-column>
+          <el-table-column
+            align="center"
+            label="操作处理"
+            width="200"
+          >
+            <template slot-scope="scope">
+              <div class="operation-wrapper">
+                <el-select v-model="scope.row.operation" class="report-select" placeholder="请选择">
+                  <el-option
+                    v-for="item in operations"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+                <a href="javascript:void(0)">确定</a>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="tab" slot="handled">
+        <el-table
+          :data="handledList"
+          border
+          :height="tableHeight"
+          style="width: 100%"
+        >
+          <el-table-column
+            type="index"
+            label="#"
+            align="center"
+            width="50"
+          >
+          </el-table-column>
+          <el-table-column
+            label="被举报用户"
+            align="center"
+            width="120"
+          >
+            <template slot-scope="scope">
+              <el-popover
+                trigger="hover"
+                placement="top"
+                :open-delay="500"
+              >
+                <div class="user-info">
+                  <p>用户名：{{ scope.row.toUser.nickName }}</p>
+                </div>
+                <div slot="reference" class="avatar-wrapper">
+                  <i :style='{backgroundImage: `url(${scope.row.toUser.avator})`}'></i>
+                </div>
+              </el-popover>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="举报用户"
+            align="center"
+            width="100"
+          >
+            <template slot-scope="scope">
+              <el-popover
+                trigger="hover"
+                placement="top"
+                :open-delay="500"
+              >
+                <div class="user-info">
+                  <p>用户名：{{ scope.row.fromUser.nickName }}</p>
+                </div>
+                <div slot="reference" class="avatar-wrapper">
+                  <i :style='{backgroundImage: `url(${scope.row.fromUser.avator})`}'></i>
                 </div>
               </el-popover>
             </template>
@@ -85,35 +193,20 @@
             </template>
           </el-table-column>
           <el-table-column
-            prop="date"
+            prop="time"
             width="180"
             align="center"
             label="反馈时间"
           >
           </el-table-column>
           <el-table-column
+            prop="state"
             align="center"
-            label="操作处理"
-            width="200"
+            label="处理状态"
+            width="100"
           >
-            <template slot-scope="scope">
-              <div class="operation-wrapper">
-                <el-select v-model="operation" class="report-select" placeholder="请选择">
-                  <el-option
-                    v-for="item in operations"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  >
-                  </el-option>
-                </el-select>
-                <a href="javascript:void(0)">确定</a>
-              </div>
-            </template>
           </el-table-column>
         </el-table>
-      </div>
-      <div class="tab" slot="handled">
       </div>
     </tab-panel>
   </div>
@@ -121,6 +214,8 @@
 
 <script>
   import TabPanel from '@/components/Common/TabPanel'
+  import * as reportApi from '@/api/reportMessage'
+  import moment from 'moment'
   export default {
     name: 'ReportManage',
     components: {
@@ -134,6 +229,9 @@
       window.addEventListener('resize', () => {
         this.tableHeight = container.clientHeight - TITLE_HEIGHT
       })
+
+      this._getUnhandledList()
+      this._getHandledList()
     },
     data () {
       return {
@@ -149,85 +247,8 @@
           }
         ],
         activeName: 'unhandled',
-        reportList: [{
-          reportedUser: {
-            avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2770691011,100164542&fm=27&gp=0.jpg',
-            name: 'xxx'
-          },
-          reportUser: {
-            avatar: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2523342981,456767842&fm=27&gp=0.jpg',
-            name: 'bbb'
-          },
-          type: '帖子',
-          reason: '小广告',
-          content: '...',
-          date: '2017-10-30 21:59:55'
-        }, {
-          reportedUser: {
-            avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2770691011,100164542&fm=27&gp=0.jpg',
-            name: 'xxx'
-          },
-          reportUser: {
-            avatar: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2523342981,456767842&fm=27&gp=0.jpg',
-            name: 'bbb'
-          },
-          type: '帖子',
-          reason: '小广告',
-          content: '...',
-          date: '2017-10-30 21:59:55'
-        }, {
-          reportedUser: {
-            avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2770691011,100164542&fm=27&gp=0.jpg',
-            name: 'xxx'
-          },
-          reportUser: {
-            avatar: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2523342981,456767842&fm=27&gp=0.jpg',
-            name: 'bbb'
-          },
-          type: '帖子',
-          reason: '小广告',
-          content: '...',
-          date: '2017-10-30 21:59:55'
-        }, {
-          reportedUser: {
-            avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2770691011,100164542&fm=27&gp=0.jpg',
-            name: 'xxx'
-          },
-          reportUser: {
-            avatar: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2523342981,456767842&fm=27&gp=0.jpg',
-            name: 'bbb'
-          },
-          type: '帖子',
-          reason: '小广告',
-          content: '...',
-          date: '2017-10-30 21:59:55'
-        }, {
-          reportedUser: {
-            avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2770691011,100164542&fm=27&gp=0.jpg',
-            name: 'xxx'
-          },
-          reportUser: {
-            avatar: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2523342981,456767842&fm=27&gp=0.jpg',
-            name: 'bbb'
-          },
-          type: '帖子',
-          reason: '小广告',
-          content: '...',
-          date: '2017-10-30 21:59:55'
-        }, {
-          reportedUser: {
-            avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2770691011,100164542&fm=27&gp=0.jpg',
-            name: 'xxx'
-          },
-          reportUser: {
-            avatar: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2523342981,456767842&fm=27&gp=0.jpg',
-            name: 'bbb'
-          },
-          type: '帖子',
-          reason: '小广告',
-          content: '...',
-          date: '2017-10-30 21:59:55'
-        }],
+        unhandledList: [],
+        handledList: [],
         operations: [{
           label: '不处理',
           value: '0'
@@ -246,15 +267,38 @@
         }, {
           label: '封号',
           value: '5'
-        }],
-        operation: ''
+        }]
       }
     },
     methods: {
       handleTabClick () {
 
       },
-      showFeedbackDetail () {
+      showReportDetail () {},
+      _getUnhandledList () {
+        reportApi.getData('/admin/accusation/getUnhandledInfoList').then(data => {
+          console.log(data)
+          if (data.code === 0) {
+            this.unhandledList = data.data.list.map(v => Object.assign({}, v, {
+              time: moment(v.time, 'YYYY-MM-DD HH:mm').fromNow(),
+              operation: this.operations[0].value
+            }))
+          }
+        }).catch(error => {
+          console.log(error)
+        })
+      },
+      _getHandledList () {
+        reportApi.getData('/admin/accusation/getHandledInfoList').then(data => {
+          console.log(data)
+          if (data.code === 0) {
+            this.handledList = data.data.list.map(v => Object.assign({}, v, {
+              time: moment(v.time, 'YYYY-MM-DD HH:mm').fromNow()
+            }))
+          }
+        }).catch(error => {
+          console.log(error)
+        })
       }
     }
   }

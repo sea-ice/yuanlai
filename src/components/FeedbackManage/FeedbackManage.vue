@@ -13,10 +13,10 @@
         type="index"
         label="#"
         align="center"
-        width="50">
+        width="70">
       </el-table-column>
       <el-table-column
-        prop="id"
+        prop="user.id"
         label="用户ID"
         align="center"
         width="100">
@@ -32,10 +32,10 @@
             :open-delay="500"
           >
             <div class="user-info">
-              <p>用户名：{{ scope.row.user.name }}</p>
+              <p>用户名：{{ scope.row.user.nickName }}</p>
             </div>
             <div slot="reference" class="avatar-wrapper">
-              <i :style='{backgroundImage: `url(${scope.row.user.avatar})`}'></i>
+              <i :style="{backgroundImage: `url(${scope.row.user.avator || (scope.row.user.gender === '男' ? Images.MaleNull : Images.FemaleNull)})`}"></i>
             </div>
           </el-popover>
         </template>
@@ -78,8 +78,8 @@
         <header>
           <p>
             用户&nbsp;
-            <i :style='{backgroundImage: `url(${chosenFeedback.user.avatar})`}'></i>&nbsp;
-            {{ chosenFeedback.user.name }}&nbsp;
+            <i :style="{backgroundImage: `url(${chosenFeedback.user.avator || (chosenFeedback.user.gender === '男' ? Images.MaleNull : Images.FemaleNull)})`}"></i>&nbsp;
+            {{ chosenFeedback.user.nickName }}&nbsp;
             反馈：
           </p>
         </header>
@@ -95,6 +95,9 @@
 
 <script>
   import Container from '@/components/Common/Container'
+  import * as feedbackApi from '@/api/feedback'
+  import moment from 'moment'
+  import Images from '@/assets/js/images'
   export default {
     name: 'FeedbackManage',
     components: {
@@ -108,73 +111,16 @@
       window.addEventListener('resize', () => {
         this.tableHeight = container.$el.clientHeight - TITLE_HEIGHT
       })
+
+      this._getFeedbackList()
     },
     data () {
       return {
         tableHeight: 0,
-        feedbackList: [{
-          id: '13412923',
-          name: 'xxx',
-          user: {
-            avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2770691011,100164542&fm=27&gp=0.jpg',
-            name: 'xxx'
-          },
-          content: '...',
-          date: '2017-10-30 21:59:55',
-          handled: true
-        }, {
-          id: '13412923',
-          name: 'xxx',
-          user: {
-            avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2770691011,100164542&fm=27&gp=0.jpg',
-            name: 'xxx'
-          },
-          content: '...',
-          date: '2017-10-30 21:59:55',
-          handled: false
-        }, {
-          id: '13412923',
-          name: 'xxx',
-          user: {
-            avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2770691011,100164542&fm=27&gp=0.jpg',
-            name: 'xxx'
-          },
-          content: '...',
-          date: '2017-10-30 21:59:55',
-          handled: false
-        }, {
-          id: '13412923',
-          name: 'xxx',
-          user: {
-            avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2770691011,100164542&fm=27&gp=0.jpg',
-            name: 'xxx'
-          },
-          content: '上面这几行配置大致的含义：由最新版本的alpine image（一个很小的包含Linux环境的image）开始构建一个新的image。FROM指定了一个基础镜像。MAINTAINER指明了当前Image的创建者。RUN指定要执行哪些bash命令。CMD指定了在Container启动时运行的一些命令。',
-          date: '2017-10-30 21:59:55',
-          handled: true
-        }, {
-          id: '13412923',
-          name: 'xxx',
-          user: {
-            avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2770691011,100164542&fm=27&gp=0.jpg',
-            name: 'xxx'
-          },
-          content: '...',
-          date: '2017-10-30 21:59:55',
-          handled: true
-        }, {
-          id: '13412923',
-          name: 'xxx',
-          user: {
-            avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2770691011,100164542&fm=27&gp=0.jpg',
-            name: 'xxx'
-          },
-          content: '...',
-          date: '2017-10-30 21:59:55',
-          handled: true
-        }],
+        feedbackList: [],
         dialogVisible: false,
-        chosenFeedback: null
+        chosenFeedback: null,
+        Images
       }
     },
     methods: {
@@ -184,6 +130,22 @@
       },
       confirmReceiveFeedback () {
         this.dialogVisible = false
+      },
+      _getFeedbackList () {
+        feedbackApi.getData('/admin/feedback/getInfoList').then(data => {
+          console.log(data)
+          if (data.code === 0) {
+            this.feedbackList = data.data.list.map(v => ({
+              handled: v.handled === 1,
+              id: v.id,
+              date: moment(v.time, 'YYYY-MM-DD HH:mm').fromNow(),
+              user: v.user,
+              content: v.content.content
+            }))
+          }
+        }).catch(error => {
+          console.log(error)
+        })
       }
     }
   }
