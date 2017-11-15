@@ -13,17 +13,20 @@
         type="index"
         label="#"
         align="center"
+        :resizable="false"
         width="70">
       </el-table-column>
       <el-table-column
         prop="user.id"
         label="用户ID"
         align="center"
+        :resizable="false"
         width="100">
       </el-table-column>
       <el-table-column
         label="用户头像"
         align="center"
+        :resizable="false"
         width="100">
         <template slot-scope="scope">
           <el-popover
@@ -43,6 +46,7 @@
       <el-table-column
         label="反馈内容"
         align="center"
+        :resizable="false"
       >
         <template slot-scope="scope">
           <div class="content-wrapper">
@@ -55,12 +59,14 @@
         prop="date"
         width="180"
         align="center"
+        :resizable="false"
         label="反馈时间">
       </el-table-column>
       <el-table-column
         align="center"
         label="状态"
         width="100"
+        :resizable="false"
       >
         <template slot-scope="scope">
           <p class="handled" v-if="scope.row.handled">已查看</p>

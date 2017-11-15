@@ -6,10 +6,10 @@
         </el-input>
       </p>
       <ul class="message-list" v-if="messageList.length">
-        <li>
-          <h3>To 所有用户</h3>
-          <p>这里是因为你的/etc/hosts没有写上映射,在文件中添加上你的IP加上localhost 看这个图</p>
-          <time>2017-10-15 12:23:34</time>
+        <li v-for="msg in messageList">
+          <h3>To {{ msg.receiver[0].nickName }} <i v-if="msg.receiver.length > 1">等{{ msg.receiver.length }}人</i></h3>
+          <p>{{ msg.message }}</p>
+          <time>{{ msg.createTime | formatTime }}</time>
         </li>
       </ul>
       <p class="no-message" v-else>
@@ -81,7 +81,7 @@
           <h3>编辑内容</h3>
           <div id="message-editor"></div>
           <div class="btn-wrapper">
-            <el-button type="primary" round>发 布</el-button>
+            <el-button type="primary" round @click="pushMessage">发 布</el-button>
           </div>
         </section>
       </container>
@@ -93,18 +93,25 @@
   import Container from '@/components/Common/Container'
   import Loading from '@/components/Common/Loading'
   import Editor from 'wangeditor'
-  import {getMessageList, getUserInfo} from '@/api/systemMessage'
+  import * as systemMsgApi from '@/api/systemMessage'
   import Images from '@/assets/js/images'
   import {debounce} from '@/assets/js/utils'
+  import moment from 'moment'
   export default {
     name: 'SystemMessage',
     components: {
       Container,
       Loading
     },
+    filters: {
+      formatTime (t) {
+        return moment(t, 'YYYY.MM.DD HH:mm').format('YYYY-MM-DD HH:mm')
+      }
+    },
     mounted () {
       this.$refs.messageContainer.parentNode.style.height = 'auto'
       this.editor = new Editor('#message-editor')
+      this.editor.customConfig.zIndex = 50
       this.editor.create()
       this._getMessageList()
       this._bounceUserSearch = debounce((v) => {
@@ -113,7 +120,7 @@
     },
     watch: {
       userMode (newVal) {
-        this.target = newVal === 'allUser' ? [0] : this.receivers
+        this.target = newVal === 'allUser' ? 0 : this.receivers
         this.receiver = {}
         this.search = ''
         this.noUser = false
@@ -139,7 +146,7 @@
     },
     methods: {
       _getMessageList () {
-        getMessageList().then(data => {
+        systemMsgApi.getData('/admin/systemMessage/getPushedMessageList').then(data => {
           console.log(data)
           if (data.code === 0) {
             this.messageList = data.data.messageList
@@ -156,7 +163,7 @@
           return
         }
         this.loading = true
-        getUserInfo(id).then(data => {
+        systemMsgApi.getUserInfo(id).then(data => {
           if (data.code === 0) {
             this.receiver = data.data.userInfo
             this.noUser = false
@@ -179,6 +186,19 @@
       deleteUser (item) {
         var i = this.receivers.findIndex(v => v.id === item.id)
         if (~i) this.receivers.splice(i, 1)
+      },
+      _pushMessage (user, msg) {
+        systemMsgApi.pushMessage(user, msg).then(data => {
+          if (data.code === 0) {
+            console.log('消息发布成功')
+          }
+        }).catch(error => {
+          console.log(error)
+        })
+      },
+      pushMessage () {
+        let target = this.target === 0 ? this.target : this.target.map(u => u.id)
+        this._pushMessage(target, this.editor.txt.html())
       }
     }
   }

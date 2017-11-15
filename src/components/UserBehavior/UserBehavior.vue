@@ -74,33 +74,42 @@
         </div>
         <card title="位置分布">
           <div class="map-wrapper">
-            <div id="china-map"></div>
+            <div id="china-map" ref="chinaMap"></div>
             <div class="province-data">
-              <h2>陕西省</h2>
-              <ul class="provice-info">
+              <h2>{{ selectProvince.name }}</h2>
+              <ul class="province-info">
                 <li>
-                  <h3>用户总数</h3>
-                  <p>54,233</p>
-                  <p>
-                    <span>10%</span>
-                    同比上周
-                  </p>
+                  <i class="province-placeholder" :style="{backgroundImage: `url(${Images.All})`}"></i>
+                  <div class="province-statistic">
+                    <h3>用户总数</h3>
+                    <p>{{ selectProvince.totalUser.num }}</p>
+                    <p>
+                      <span>{{ selectProvince.totalUser.percentage }}</span>
+                      同比上周
+                    </p>
+                  </div>
                 </li>
                 <li>
-                  <h3>当天新增用户</h3>
-                  <p>323</p>
-                  <p>
-                    <span>10%</span>
-                    同比上周
-                  </p>
+                  <i class="province-placeholder" :style="{backgroundImage: `url(${Images.NewUser})`}"></i>
+                  <div class="province-statistic">
+                    <h3>当天新增用户</h3>
+                    <p>{{ selectProvince.addUser.num }}</p>
+                    <p>
+                      <span>{{ selectProvince.addUser.percentage }}</span>
+                      同比上周
+                    </p>
+                  </div>
                 </li>
                 <li>
-                  <h3>当天新增帖子</h3>
-                  <p>3232</p>
-                  <p>
-                    <span>10%</span>
-                    同比上周
-                  </p>
+                  <i class="province-placeholder" :style="{backgroundImage: `url(${Images.Post})`}"></i>
+                  <div class="province-statistic">
+                    <h3>当天新增帖子</h3>
+                    <p>{{ selectProvince.newArticles.num }}</p>
+                    <p>
+                      <span>{{ selectProvince.newArticles.percentage }}</span>
+                      同比上周
+                    </p>
+                  </div>
                 </li>
               </ul>
             </div>
@@ -111,8 +120,11 @@
         <card title="标签活跃比">
           <div class="content-wrapper">
             <div class="total-count">
-              <h2 class="type-name">Python</h2>
-              <p>10203次</p>
+              <div class="select-type">
+                <h2 class="type-name">{{ currentTag.name }}</h2>
+                <a href="javascript:void(0);" @click="showTagsDialog">点击更换标签</a>
+              </div>
+              <p>{{ tagStatistic.totalArticles }}次</p>
             </div>
             <div class="arc" ref="tagDayCountArc"></div>
             <div class="arc" ref="tagWeekCountArc"></div>
@@ -200,6 +212,31 @@
         </div>
       </div>
     </tab-panel>
+    <el-dialog
+      title="标签列表"
+      :visible.sync="tagsDialogVisible"
+      size="small"
+      :close-on-click-modal="false"
+    >
+      <div class="tags-wrapper">
+        <ul>
+          <li v-for="type in types">
+            <h4 class="tag-type-name">{{ type.name }}</h4>
+            <div class="tags">
+              <span
+                class="tag"
+                :class="{selected: selectedTag.id === tag.id}"
+                v-for="tag in type.tags"
+                @click="selectTag(tag)"
+              >{{ tag.name }}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="showTagStatistic">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -210,6 +247,7 @@
   import {drawLine, drawPie, drawChinaMap, drawArc} from '@/assets/js/charts'
   import * as userBehaviorApi from '@/api/userBehavior'
   import moment from 'moment'
+  import Images from '@/assets/js/images'
   export default {
     name: 'UserBehavior',
     components: {
@@ -222,6 +260,145 @@
         day: '日',
         week: '周',
         month: '月'
+      }
+
+      let PROVINCE_MAP = {
+        '北京': {
+          id: 0,
+          fullName: '北京市'
+        },
+        '广东': {
+          id: 1,
+          fullname: '广东省'
+        },
+        '山东': {
+          id: 2,
+          fullname: '山东省'
+        },
+        '江苏': {
+          id: 3,
+          fullname: '江苏省'
+        },
+        '河南': {
+          id: 4,
+          fullname: '河南省'
+        },
+        '上海': {
+          id: 5,
+          fullname: '上海市'
+        },
+        '河北': {
+          id: 6,
+          fullname: '河北省'
+        },
+        '浙江': {
+          id: 7,
+          fullname: '浙江省'
+        },
+        '香港': {
+          id: 8,
+          fullname: '香港特别行政区'
+        },
+        '陕西': {
+          id: 9,
+          fullname: '陕西省'
+        },
+        '湖南': {
+          id: 10,
+          fullname: '湖南省'
+        },
+        '重庆': {
+          id: 11,
+          fullname: '重庆市'
+        },
+        '福建': {
+          id: 12,
+          fullname: '福建省'
+        },
+        '天津': {
+          id: 13,
+          fullname: '天津市'
+        },
+        '云南': {
+          id: 14,
+          fullname: '云南省'
+        },
+        '四川': {
+          id: 15,
+          fullname: '四川省'
+        },
+        '广西': {
+          id: 16,
+          fullname: '广西省'
+        },
+        '安徽': {
+          id: 17,
+          fullname: '安徽省'
+        },
+        '海南': {
+          id: 18,
+          fullname: '海南省'
+        },
+        '江西': {
+          id: 19,
+          fullname: '江西省'
+        },
+        '湖北': {
+          id: 20,
+          fullname: '湖北省'
+        },
+        '山西': {
+          id: 21,
+          fullname: '山西省'
+        },
+        '辽宁': {
+          id: 22,
+          fullname: '辽宁省'
+        },
+        '台湾': {
+          id: 23,
+          fullname: '台湾省'
+        },
+        '黑龙江': {
+          id: 24,
+          fullname: '黑龙江省'
+        },
+        '内蒙古': {
+          id: 25,
+          fullname: '内蒙古自治区'
+        },
+        '澳门': {
+          id: 26,
+          fullname: '澳门特别行政区'
+        },
+        '贵州': {
+          id: 27,
+          fullname: '贵州省'
+        },
+        '甘肃': {
+          id: 28,
+          fullname: '甘肃省'
+        },
+        '青海': {
+          id: 29,
+          fullname: '青海省'
+        },
+        '新疆': {
+          id: 30,
+          fullname: '新疆维吾尔自治区'
+        },
+        '西藏': {
+          id: 31,
+          fullname: '西藏自治区'
+        },
+        '吉林': {
+          id: 32,
+          fullname: '吉林省'
+        },
+        '宁夏': {
+          id: 33,
+          fullname: '宁夏回族自治区'
+        }
       }
       this.CLICK_NAMES = ['主页面搜索框', '主页面“分享帖”按钮', '主页面“求助帖”按钮', '发现页面搜索框', '搜索用户结果页面“附近”按钮', '发帖按钮（分享、求助）']
       // 新增用户数
@@ -243,8 +420,18 @@
       this._getPieData('/admin/analysis/getHobby', this.$refs.hobby)
       //
       drawChinaMap(document.getElementById('china-map'))
+      this._getProvinceData(PROVINCE_MAP['陕西'])
+      let chinaMap = this.$refs.chinaMap
+      let tooltip = chinaMap.childNodes[1]
+      chinaMap.childNodes[0].childNodes[0].addEventListener('click', () => {
+        if (tooltip.style.display === 'none') return
+        this._getProvinceData(PROVINCE_MAP[tooltip.innerHTML])
+      })
 
-//      this._getTagActiveRatio(70)
+      this.getTagStatistic({
+        id: 1,
+        name: 'Java'
+      })
       this._getActiveArticle('/admin/analysis/getHelpArticle', this.helpArticle)
       this._getActiveArticle('/admin/analysis/getShareArticle', this.shareArticle)
 
@@ -326,6 +513,12 @@
             num: []
           }
         },
+        selectProvince: {
+          name: '',
+          newArticles: {},
+          addUser: {},
+          totalUser: {}
+        },
         addUserVal: '7',
         addUserOptions: [{
           label: '最近一周',
@@ -349,7 +542,13 @@
           week: 0,
           month: 0
         },
-        clickData: []
+        clickData: [],
+        tagsDialogVisible: false,
+        types: [],
+        selectedTag: {},
+        currentTag: {},
+        tagStatistic: {},
+        Images
       }
     },
     methods: {
@@ -443,14 +642,15 @@
           console.log(error)
         })
       },
-      _getTagActiveRatio (id) {
-        userBehaviorApi.getActiveLabel(id).then(data => {
+      _getProvinceData (p) {
+        userBehaviorApi.getProvinceData(p.id).then(data => {
           console.log(data)
           if (data.code === 0) {
-            data = data.data
-            drawArc(this.$refs.tagDayCountArc, '日活跃比', data.day)
-            drawArc(this.$refs.tagWeekCountArc, '周活跃比', data.week)
-            drawArc(this.$refs.tagMonthCountArc, '月活跃比', data.month)
+            let result = data.data.result
+            Object.keys(result).forEach(k => {
+              this.selectProvince[k] = result[k]
+            })
+            this.selectProvince.name = p.fullname
           }
         }).catch(error => {
           console.log(error)
@@ -496,12 +696,71 @@
         }).catch(error => {
           console.log(error)
         })
+      },
+      showTagsDialog () {
+        this._getAllTags()
+        this.selectedTag = this.currentTag
+        this.tagsDialogVisible = true
+      },
+      _getAllTags () {
+        userBehaviorApi.getData('/admin/analysis/getLabelList').then(data => {
+          console.log(data)
+          if (data.code === 0) {
+            let types = {}
+            this.types[0] = {
+              name: '热门标签',
+              tags: []
+            }
+            data.data.labels.forEach(tag => {
+              if (tag.type === '热门') {
+                this.types[0].tags.push(tag)
+              } else {
+                if (!types[tag.type]) types[tag.type] = []
+                types[tag.type].push(tag)
+              }
+            })
+            console.log(this.types)
+            console.log(types)
+            Object.keys(types).forEach(key => {
+              this.types.push({
+                name: key,
+                tags: types[key]
+              })
+            })
+          }
+        }).catch(error => {
+          console.log(error)
+        })
+      },
+      selectTag (tag) {
+        this.selectedTag = tag
+      },
+      getTagStatistic (tag) {
+        userBehaviorApi.getActiveLabel(tag.id).then(data => {
+          console.log(data)
+          if (data.code === 0) {
+            data = data.data
+            this.currentTag = tag
+            this.tagStatistic = data
+            drawArc(this.$refs.tagDayCountArc, '日活跃比', parseFloat(data.day))
+            drawArc(this.$refs.tagWeekCountArc, '周活跃比', parseFloat(data.week))
+            drawArc(this.$refs.tagMonthCountArc, '月活跃比', parseFloat(data.month))
+          }
+        }).catch(error => {
+          console.log(error)
+        })
+      },
+      showTagStatistic () {
+        this.getTagStatistic(this.selectedTag)
+        this.tagsDialogVisible = false
       }
     }
   }
 </script>
 
 <style scoped lang="sass">
+  @import '../../assets/sass/mixin'
+  @import '../../assets/sass/variables'
   h2
     font-weight: bold
     text-align: center
@@ -519,6 +778,7 @@
     -moz-border-radius: 5px
     border-radius: 5px
     border: 1px solid rgb(209, 219, 229)
+    @include boxShadow
     h2
       line-height: 50px
     & > div
@@ -567,9 +827,22 @@
     .province-data
       width: 300px
 
-  .provice-info
+  .province-info
+    padding-left: 70px
     li
+      display: flex
       margin-top: 40px
+      align-items: center
+      .province-placeholder
+        display: block
+        width: 50px
+        height: 50px
+        -webkit-background-size: contain
+        background-size: contain
+        background-position: 50% 50%
+        background-repeat: no-repeat
+      .province-statistic
+        margin-left: 20px
       h3
         font-size: 14px
         line-height: 16px
@@ -577,6 +850,8 @@
         font-size: 24px
         font-weight: bold
         line-height: 40px
+        font-family: Impact
+        color: $color-purple
       p:last-of-type
         font-size: 14px
         line-height: 16px
@@ -592,6 +867,11 @@
       color: #666
       font-weight: bold
       text-align: left
+      max-width: 180px
+      white-space: nowrap
+      overflow: hidden
+      -ms-text-overflow: ellipsis
+      text-overflow: ellipsis
     p
       line-height: 100px
       font-size: 50px
@@ -623,4 +903,43 @@
         display: block
         height: 100%
         background-color: #2CA2FC
+
+  .select-type
+    display: flex
+    align-items: center
+    a
+      color: #2CA2FC
+      margin-left: 20px
+      line-height: 30px
+
+  .tags-wrapper
+    height: 300px
+    overflow: auto
+    .tag-type-name
+      line-height: 40px
+      border-bottom: 2px solid #d1dbe5
+      margin-right: 15px
+    .tags
+      display: flex
+      align-items: center
+      flex-wrap: wrap
+      padding: 10px
+      margin-left: -20px
+      .tag
+        display: block
+        -webkit-border-radius: 13px
+        -moz-border-radius: 13px
+        border-radius: 13px
+        border: 1px solid $color-purple
+        line-height: 24px
+        font-size: 14px
+        padding: 0px 10px
+        color: $color-purple
+        white-space: nowrap
+        margin-top: 10px
+        margin-left: 20px
+        cursor: pointer
+        &.selected, &:hover
+          background-color: $color-purple
+          color: #fff
 </style>

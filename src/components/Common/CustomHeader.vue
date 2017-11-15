@@ -1,7 +1,7 @@
 <template>
   <header>
     <div class="logo-wrapper">
-
+      <i class="logo"></i>
     </div>
     <div class="header-content">
       <h1>源来后台管理系统</h1>
@@ -25,23 +25,34 @@
     display: flex
     width: 100%
     top: 0px
-    z-index: 1000
+    z-index: 99
+    background-image: url(../../assets/images/header.jpg)
+    -webkit-background-size: cover
+    background-size: cover
   .logo-wrapper
-    width: 60px
-    height: 60px
-    background-color: #806B6B
+    width: 100px
+    height: 100px
+    .logo
+      display: block
+      width: 60px
+      height: 60px
+      background-image: url(../../assets/images/yuanlai.png)
+      -webkit-background-size: contain
+      background-size: contain
+      margin: 20px auto
   .header-content
     display: flex
     justify-content: space-between
     flex-grow: 1
     padding: 0 15px
-    background-color: #DCC7C7
     h1
-      line-height: 60px
+      line-height: 100px
+      font-size: 28px
+      color: #fff
   .login-info
     display: flex
     align-items: center
-    height: 60px
+    height: 100px
     .user-avatar
       display: block
       width: 40px

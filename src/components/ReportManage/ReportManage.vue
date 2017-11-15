@@ -17,12 +17,14 @@
             label="#"
             align="center"
             width="50"
+            :resizable="false"
           >
           </el-table-column>
           <el-table-column
             label="被举报用户"
             align="center"
             width="120"
+            :resizable="false"
           >
             <template slot-scope="scope">
               <el-popover
@@ -34,7 +36,7 @@
                   <p>用户名：{{ scope.row.toUser.nickName }}</p>
                 </div>
                 <div slot="reference" class="avatar-wrapper">
-                  <i :style='{backgroundImage: `url(${scope.row.toUser.avator})`}'></i>
+                  <i :style="{backgroundImage: `url(${scope.row.toUser.avator || (scope.row.toUser.gender === '男' ? Images.MaleNull : Images.FemaleNull)})`}"></i>
                 </div>
               </el-popover>
             </template>
@@ -43,6 +45,7 @@
             label="举报用户"
             align="center"
             width="100"
+            :resizable="false"
           >
             <template slot-scope="scope">
               <el-popover
@@ -54,7 +57,7 @@
                   <p>用户名：{{ scope.row.fromUser.nickName }}</p>
                 </div>
                 <div slot="reference" class="avatar-wrapper">
-                  <i :style='{backgroundImage: `url(${scope.row.fromUser.avator})`}'></i>
+                  <i :style="{backgroundImage: `url(${scope.row.fromUser.avator || (scope.row.fromUser.gender === '男' ? Images.MaleNull : Images.FemaleNull)})`}"></i>
                 </div>
               </el-popover>
             </template>
@@ -64,6 +67,7 @@
             label="举报类型"
             align="center"
             width="100"
+            :resizable="false"
           >
           </el-table-column>
           <el-table-column
@@ -71,14 +75,16 @@
             label="举报原因"
             align="center"
             width="100"
+            :resizable="false"
           >
           </el-table-column>
           <el-table-column
             label="反馈内容"
             align="center"
+            :resizable="false"
           >
             <template slot-scope="scope">
-              <div class="content-wrapper">
+              <div class="content-wrapper" v-if="scope.row.content">
                 <p class="feedback-content">{{ scope.row.content }}</p>
                 <a href="javascript:void(0)" @click.stop="showReportDetail(scope.row)">查看详情</a>
               </div>
@@ -89,12 +95,14 @@
             width="180"
             align="center"
             label="反馈时间"
+            :resizable="false"
           >
           </el-table-column>
           <el-table-column
             align="center"
             label="操作处理"
             width="200"
+            :resizable="false"
           >
             <template slot-scope="scope">
               <div class="operation-wrapper">
@@ -125,12 +133,14 @@
             label="#"
             align="center"
             width="50"
+            :resizable="false"
           >
           </el-table-column>
           <el-table-column
             label="被举报用户"
             align="center"
             width="120"
+            :resizable="false"
           >
             <template slot-scope="scope">
               <el-popover
@@ -142,7 +152,7 @@
                   <p>用户名：{{ scope.row.toUser.nickName }}</p>
                 </div>
                 <div slot="reference" class="avatar-wrapper">
-                  <i :style='{backgroundImage: `url(${scope.row.toUser.avator})`}'></i>
+                  <i :style="{backgroundImage: `url(${scope.row.toUser.avator || (scope.row.toUser.gender === '男' ? Images.MaleNull : Images.FemaleNull)})`}"></i>
                 </div>
               </el-popover>
             </template>
@@ -151,6 +161,7 @@
             label="举报用户"
             align="center"
             width="100"
+            :resizable="false"
           >
             <template slot-scope="scope">
               <el-popover
@@ -162,7 +173,7 @@
                   <p>用户名：{{ scope.row.fromUser.nickName }}</p>
                 </div>
                 <div slot="reference" class="avatar-wrapper">
-                  <i :style='{backgroundImage: `url(${scope.row.fromUser.avator})`}'></i>
+                  <i :style="{backgroundImage: `url(${scope.row.fromUser.avator || (scope.row.fromUser.gender === '男' ? Images.MaleNull : Images.FemaleNull)})`}"></i>
                 </div>
               </el-popover>
             </template>
@@ -172,6 +183,7 @@
             label="举报类型"
             align="center"
             width="100"
+            :resizable="false"
           >
           </el-table-column>
           <el-table-column
@@ -179,14 +191,16 @@
             label="举报原因"
             align="center"
             width="100"
+            :resizable="false"
           >
           </el-table-column>
           <el-table-column
             label="反馈内容"
             align="center"
+            :resizable="false"
           >
             <template slot-scope="scope">
-              <div class="content-wrapper">
+              <div class="content-wrapper" v-if="scope.row.content">
                 <p class="feedback-content">{{ scope.row.content }}</p>
                 <a href="javascript:void(0)" @click.stop="showFeedbackDetail(scope.row)">查看详情</a>
               </div>
@@ -197,6 +211,7 @@
             width="180"
             align="center"
             label="反馈时间"
+            :resizable="false"
           >
           </el-table-column>
           <el-table-column
@@ -204,6 +219,7 @@
             align="center"
             label="处理状态"
             width="100"
+            :resizable="false"
           >
           </el-table-column>
         </el-table>
@@ -216,6 +232,7 @@
   import TabPanel from '@/components/Common/TabPanel'
   import * as reportApi from '@/api/reportMessage'
   import moment from 'moment'
+  import Images from '@/assets/js/images'
   export default {
     name: 'ReportManage',
     components: {
@@ -267,7 +284,8 @@
         }, {
           label: '封号',
           value: '5'
-        }]
+        }],
+        Images
       }
     },
     methods: {

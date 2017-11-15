@@ -6,7 +6,7 @@
         :data-url="item.url"
         @click="togglePage"
       >
-        <i class="fa" :class="item.icon"></i>
+        <i></i>
         <p :style="{marginTop: `${item.m}px`}">{{ item.title }}</p>
       </a>
     </li>
@@ -26,27 +26,22 @@
     data () {
       return {
         menu: [{
-          icon: 'fa-home',
           title: '首页',
           url: '/',
           m: -2
         }, {
-          icon: 'fa-bell-o',
           title: '系统消息',
           url: '/system',
           m: 2
         }, {
-          icon: 'fa-line-chart',
           title: '用户行为',
           url: '/user',
           m: 0
         }, {
-          icon: 'fa-send',
           title: '反馈管理',
           url: '/feedback',
           m: 2
         }, {
-          icon: 'fa-exclamation-triangle',
           title: '举报管理',
           url: '/report',
           m: 0
@@ -75,18 +70,41 @@
     li
       height: 100px
       text-align: center
-      &:first-child
-        a
-          padding-top: 27px
+      &:nth-child(1)
         i
-          font-size: 34px
-      &:not(:first-child)
-        a
-          padding-top: 30px
+          background-image: url(../../assets/images/homepage.png)
+      &:nth-child(2)
         i
-          font-size: 28px
+          background-image: url(../../assets/images/message.png)
+      &:nth-child(3)
+        i
+          background-image: url(../../assets/images/user.png)
+      &:nth-child(4)
+        i
+          background-image: url(../../assets/images/feedback.png)
+      &:nth-child(5)
+        i
+          background-image: url(../../assets/images/report.png)
       &.active
-        i, p
+        i
+          width: 40px
+          height: 40px
+        &:nth-child(1)
+          i
+            background-image: url(../../assets/images/homepage_active.png)
+        &:nth-child(2)
+          i
+            background-image: url(../../assets/images/message_active.png)
+        &:nth-child(3)
+          i
+            background-image: url(../../assets/images/user_active.png)
+        &:nth-child(4)
+          i
+            background-image: url(../../assets/images/feedback_active.png)
+        &:nth-child(5)
+          i
+            background-image: url(../../assets/images/report_active.png)
+        p
           color: rgb(98, 85, 215)
       a
         display: block
@@ -94,14 +112,22 @@
         -webkit-box-sizing: border-box
         -moz-box-sizing: border-box
         box-sizing: border-box
+        padding-top: 20px
         &:hover
-          i, p
+          p
             color: rgb(98, 85, 215)
       i
-        font-size: 28px
+        display: block
+        width: 30px
+        height: 30px
+        -webkit-background-size: contain
+        background-size: contain
+        background-position: 50% 50%
+        background-repeat: no-repeat
+        margin: 0 auto
       p
         font-size: 12px
-        line-height: 14px
+        line-height: 20px
     .indicator
       position: absolute
       right: -1px
@@ -118,5 +144,5 @@
       transition: top .3s ease-in-out
   @for $i from 1 through 5
     .active:nth-of-type(#{$i}) ~ .indicator
-      top: 45px + 100px * ($i - 1)
+      top: 42px + 100px * ($i - 1)
 </style>

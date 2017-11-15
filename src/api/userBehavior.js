@@ -8,13 +8,6 @@ export function getData (url) {
     })
 }
 
-export function getAllLabels () {
-  return axios.get(`${URL_PREFIX}/admin/analysis/getLabelList`, {})
-    .then(response => {
-      return Promise.resolve(response.data)
-    })
-}
-
 export function getActiveLabel (id) {
   return axios.get(`${URL_PREFIX}/admin/analysis/getActiveLabel`, {
     params: {
@@ -24,4 +17,14 @@ export function getActiveLabel (id) {
     .then(response => {
       return Promise.resolve(response.data)
     })
+}
+
+export function getProvinceData (id) {
+  return axios.get(`${URL_PREFIX}/admin/analysis/getProvince`, {
+    params: {
+      id
+    }
+  }).then(response => {
+    return Promise.resolve(response.data)
+  })
 }

@@ -22,7 +22,18 @@ export function drawLine (ele, x, y) {
       name: y.name,
       type: 'line',
       smooth: true,
-      data: y.data
+      data: y.data,
+      lineStyle: {
+        normal: {
+          color: 'rgb(98,85,215)'
+        }
+      },
+      itemStyle: {
+        normal: {
+          color: 'rgb(98,85,215)',
+          borderWidth: 2
+        }
+      }
     }]
   })
 }
@@ -51,10 +62,18 @@ export function drawPie (ele, d) {
 export function drawChinaMap (ele) {
   let myChart = echarts.init(ele)
   myChart.setOption({
+    tooltip: {
+      show: true
+    },
     series: [{
       type: 'map',
       mapType: 'china',
-      selectedMode: 'single'
+      selectedMode: 'single',
+      left: 0,
+      right: 0,
+      tooltip: {
+        formatter: '{b}'
+      }
     }]
   })
 }
