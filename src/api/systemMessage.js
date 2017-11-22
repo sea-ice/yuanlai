@@ -1,4 +1,4 @@
-import {URL_PREFIX} from '@/api/config'
+import {URL_PREFIX, PROXY_URL} from '@/api/config'
 import axios from 'axios'
 
 export function getData (url) {
@@ -19,12 +19,13 @@ export function getUserInfo (id) {
 }
 
 export function pushMessage (user, msg) {
-  return axios.post(`${URL_PREFIX}/admin/systemMessage/pushMessage`, {
-    data: {
-      receiverId: user,
-      message: msg
-    }
+  console.log(user)
+  console.log(msg)
+  return axios.post(`${PROXY_URL}${URL_PREFIX}/admin/systemMessage/pushMessage`, {
+    receiverId: user,
+    message: msg
   }).then(response => {
+    console.log(response.data)
     return Promise.resolve(response.data)
   })
 }

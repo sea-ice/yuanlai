@@ -1,5 +1,5 @@
 <template>
-  <div ref="homepageContainer">
+  <div ref="homepageContainer" class="homepage-wrapper">
     <div class="right-container">
       <container title="用户实时数据">
         <ul class="realtime-data">
@@ -27,20 +27,27 @@
     <main>
       <container title="热门标签 TOP10">
         <div class="tags-wrapper">
-          <!--<el-tag v-for="label in hotLabels" color="#E9FAF0">{{ label }}</el-tag>-->
-          <span class="tag">HTML</span>
+          <!--<el-tag color="#E9FAF0">{{ label }}</el-tag>-->
+          <span v-for="label in hotLabels" class="tag">{{ label }}</span>
         </div>
       </container>
       <container title="热门帖子 TOP10">
         <ul class="post-list">
           <li v-for="(article, i) in hotArticles">
+            <i class="top-rank">{{ i + 1 }}</i>
             <h3>{{ article.title }}</h3>
             <p class="post-content">{{ article.content }}</p>
-            <ul class="post-images" v-if="article.images.length">
-              <li v-for="image in article.images"><img :src="image" alt=""></li>
-            </ul>
-            <time class="post-time">{{ article.time }}</time>
-            <div class="bottom-border" v-if="i !== hotArticles.length - 1"></div>
+            <!--<ul class="post-images" v-if="article.image.length">-->
+              <!--<li v-for="image in article.image" :style="{backgroundImage: `url(${image}})`}"></li>-->
+            <!--</ul>-->
+            <p class="post-time">
+              by
+              <i :style="{backgroundImage: `url(${article.avator})`}"></i>&nbsp;
+              <span class="user-nickname">{{ article.nickName }}</span>
+              at
+              <time>{{ article.time }}</time>
+            </p>
+            <div class="bottom-border"></div>
           </li>
         </ul>
       </container>
@@ -105,6 +112,10 @@
 
 <style scoped lang="sass">
   @import '../../assets/sass/variables'
+  .homepage-wrapper
+    padding-right: 25px
+
+
   .right-container
     float: right
     width: 350px
@@ -131,6 +142,7 @@
     display: flex
     align-items: center
     flex-wrap: wrap
+    margin-left: -20px
     .tag
       display: block
       -webkit-border-radius: 13px
@@ -142,49 +154,120 @@
       padding: 0px 10px
       color: $color-purple
       white-space: nowrap
-    .tag + .tag
+      margin-top: 10px
       margin-left: 20px
   .post-list
     &>li
       position: relative
       padding: 0 10px 10px
+    &>li:nth-child(10) .top-rank
+      padding-left: 7px
+    &>li:last-child .bottom-border
+      display: none
     &>li + li
       margin-top: 10px
-    .bottom-border
-      position: absolute
-      width: 100%
-      height: 1px
-      margin-top: 10px
-      background-color: rgb(209, 219, 229)
-      &:before
-        content: ''
-        position: absolute
-        width: 28px
-        height: 28px
-        background-color: #fff
-        left: 50%
-        margin-top: -14px
-        margin-left: -14px
-      &:after
-        content: ''
-        position: absolute
-        width: 8px
-        height: 8px
-        -webkit-border-radius: 50%
-        -moz-border-radius: 50%
-        border-radius: 50%
-        border: 1px solid rgb(209, 219, 229)
-        left: 50%
-        margin-top: -4px
-        margin-left: -4px
     h3
       font-weight: bold
-      line-height: 30px
-    .post-content
-      line-height: 24px
-      max-height: 48px
+      line-height: 50px
+      font-size: 20px
+      padding-left: 30px
+      -webkit-box-sizing: border-box
+      -moz-box-sizing: border-box
+      box-sizing: border-box
+      white-space: nowrap
       overflow: hidden
       -ms-text-overflow: ellipsis
       text-overflow: ellipsis
-      margin: 5px 0 10px
+    .top-rank
+      position: absolute
+      width: 40px
+      height: 40px
+      line-height: 40px
+      -webkit-box-sizing: border-box
+      -moz-box-sizing: border-box
+      box-sizing: border-box
+      margin-left: -20px
+      margin-top: 5px
+      padding-left: 12px
+      background-image: url(../../assets/images/top.svg)
+      -webkit-background-size: contain
+      background-size: contain
+      background-repeat: no-repeat
+      background-position: 50% 50%
+      font-size: 24px
+      color: $color-purple
+      font-family: 'Impact'
+    .post-content
+      line-height: 24px
+      max-height: 48px
+      color: #666
+      overflow: hidden
+      -ms-text-overflow: ellipsis
+      text-overflow: ellipsis
+      margin-top: 5px
+    .post-images
+      font-size: 0px
+      margin-top: 10px
+      li
+        display: inline-block
+        width: 19%
+        background-position: 50% 50%
+        -webkit-background-size: cover
+        background-size: cover
+        &:after
+          content: ''
+          display: block
+          padding-top: calc(133.3333%)
+      li + li
+        margin-left: 1.25%
+    .post-time
+      line-height: 30px
+      text-align: right
+      padding-top: 10px
+      i
+        display: inline-block
+        width: 30px
+        height: 30px
+        -webkit-background-size: contain
+        background-size: contain
+        background-repeat: no-repeat
+        -webkit-border-radius: 50%
+        -moz-border-radius: 50%
+        border-radius: 50%
+        vertical-align: top
+      .user-nickname
+        font-size: 14px
+        color: #666
+      time
+        font-style: italic
+
+  .bottom-border
+    position: absolute
+    width: 100%
+    height: 1px
+    margin-top: 10px
+    margin-left: -10px
+    background-color: rgb(209, 219, 229)
+    &:before
+      content: ''
+      position: absolute
+      width: 28px
+      height: 28px
+      background-color: #fff
+      left: 50%
+      margin-top: -14px
+      margin-left: -14px
+    &:after
+      content: ''
+      position: absolute
+      width: 8px
+      height: 8px
+      -webkit-border-radius: 50%
+      -moz-border-radius: 50%
+      border-radius: 50%
+      border: 1px solid rgb(209, 219, 229)
+      left: 50%
+      margin-top: -4px
+      margin-left: -4px
+
 </style>

@@ -1,5 +1,8 @@
 'use strict'
 require('./check-versions')()
+// var axios = require('axios')
+// var multipart = require('connect-multiparty');
+// var multipartMiddleware = multipart();
 
 const config = require('../config')
 if (!process.env.NODE_ENV) {
@@ -23,6 +26,27 @@ const proxyTable = config.dev.proxyTable
 
 const app = express()
 const compiler = webpack(webpackConfig)
+// var apiRoutes = express.Router()
+//
+// apiRoutes.post('/pushMessage', multipartMiddleware, function (req, res) {
+//   var url = 'http://13.76.169.167:8080/qtserver/admin/systemMessage/pushMessage'
+//   console.log(req.body)
+//   axios.post(url, {
+//     receiverId: req.body.receiverId,
+//     message: req.body.message
+//   }, {
+//     headers: {
+//       referer: 'http://13.76.169.167:8080/',
+//       host: 'http://13.76.169.167:8080/'
+//     }
+//   }).then(function (response) {
+//     console.log(response.data)
+//     res.json(response.data)
+//   }).catch(function (error) {
+//     console.log(error)
+//   })
+// })
+// app.use('/api', apiRoutes)
 
 const devMiddleware = require('webpack-dev-middleware')(compiler, {
   publicPath: webpackConfig.output.publicPath,

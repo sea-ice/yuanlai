@@ -6,11 +6,14 @@ import router from './router'
 import ElementUI from 'element-ui'
 import '@/assets/sass/reset.sass'
 import 'element-ui/lib/theme-default/index.css'
-import '@/assets/sass/base.sass'
 import '@/assets/css/font-awesome.min.css'
+import VueQuillEditor from 'vue-quill-editor'
+import '@/assets/sass/base.sass'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
+Vue.use(VueQuillEditor)
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

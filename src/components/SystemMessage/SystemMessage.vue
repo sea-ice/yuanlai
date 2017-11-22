@@ -1,20 +1,27 @@
 <template>
-  <div ref="messageContainer">
-    <container class="right-container" title="历史消息">
-      <p class="search-input" v-if="messageList.length">
-        <el-input size="small" placeholder="请输入内容" suffix-icon="el-icon-search">
+  <div ref="messageContainer" class="system-message-wrapper">
+    <container class="right-container" title="历史消息" :noPadding="true">
+      <p class="search-input" v-if="allMessage.length">
+        <el-input
+          size="small"
+          placeholder="请输入内容"
+          suffix-icon="el-icon-search"
+          @change="searchMsgHistory"
+        >
         </el-input>
       </p>
-      <ul class="message-list" v-if="messageList.length">
-        <li v-for="msg in messageList">
-          <h3>To {{ msg.receiver[0].nickName }} <i v-if="msg.receiver.length > 1">等{{ msg.receiver.length }}人</i></h3>
-          <p>{{ msg.message }}</p>
-          <time>{{ msg.createTime | formatTime }}</time>
-        </li>
-      </ul>
-      <p class="no-message" v-else>
-        <i>暂无历史记录</i>
-      </p>
+      <div class="message-list-wrapper" ref="msgListWrapper">
+        <ul class="message-list" v-if="messageList.length">
+          <li v-for="msg in messageList">
+            <h3>To {{ msg.receiver[0].nickName }} <i v-if="msg.receiver.length > 1">等{{ msg.receiver.length }}人</i></h3>
+            <p>{{ msg.message }}</p>
+            <time>{{ msg.createTime | formatTime }}</time>
+          </li>
+        </ul>
+        <p class="no-message" v-else>
+          <i>暂无历史记录</i>
+        </p>
+      </div>
     </container>
     <main>
       <container title="发送消息">
@@ -79,7 +86,10 @@
         </section>
         <section class="editor-wrapper">
           <h3>编辑内容</h3>
-          <div id="message-editor"></div>
+          <quill-editor
+            v-model="content"
+            ref="myQuillEditor">
+          </quill-editor>
           <div class="btn-wrapper">
             <el-button type="primary" round @click="pushMessage">发 布</el-button>
           </div>
@@ -92,7 +102,7 @@
 <script>
   import Container from '@/components/Common/Container'
   import Loading from '@/components/Common/Loading'
-  import Editor from 'wangeditor'
+
   import * as systemMsgApi from '@/api/systemMessage'
   import Images from '@/assets/js/images'
   import {debounce} from '@/assets/js/utils'
@@ -109,18 +119,27 @@
       }
     },
     mounted () {
-      this.$refs.messageContainer.parentNode.style.height = 'auto'
-      this.editor = new Editor('#message-editor')
-      this.editor.customConfig.zIndex = 50
-      this.editor.create()
+      let container = this.$refs.messageContainer
+      container.parentNode.style.height = 'auto'
+
       this._getMessageList()
       this._bounceUserSearch = debounce((v) => {
         this._getUserInfo(v)
       }, 500)
+      this._debounceHistorySearch = debounce(v => {
+        if (!v.trim()) {
+          this.messageList = this.allMessage
+          return
+        }
+        let REG_EXP = new RegExp(v)
+        this.messageList = this.allMessage.filter(m => {
+          return m.message.match(REG_EXP) || m.createTime.match(REG_EXP) || ~m.receiver.findIndex(r => r.nickName.match(REG_EXP))
+        })
+      }, 500)
     },
     watch: {
       userMode (newVal) {
-        this.target = newVal === 'allUser' ? 0 : this.receivers
+        this.target = newVal === 'allUser' ? [0] : this.receivers
         this.receiver = {}
         this.search = ''
         this.noUser = false
@@ -134,6 +153,7 @@
     data () {
       return {
         Images,
+        allMessage: [],
         messageList: [],
         userMode: 'allUser',
         loading: false,
@@ -141,7 +161,8 @@
         search: '',
         receiver: {},
         receivers: [],
-        target: []
+        target: [0],
+        content: ''
       }
     },
     methods: {
@@ -149,7 +170,10 @@
         systemMsgApi.getData('/admin/systemMessage/getPushedMessageList').then(data => {
           console.log(data)
           if (data.code === 0) {
-            this.messageList = data.data.messageList
+            this.messageList = this.allMessage = data.data.messageList
+            this.$nextTick(() => {
+              if (this.allMessage.length) this.$refs.msgListWrapper.style.maxHeight = `${document.documentElement.clientHeight - 125 - 25 - 50}px`
+            })
           }
         }).catch(error => {
           console.log(error)
@@ -189,22 +213,32 @@
       },
       _pushMessage (user, msg) {
         systemMsgApi.pushMessage(user, msg).then(data => {
+          console.log(data)
           if (data.code === 0) {
-            console.log('消息发布成功')
+            this.$message({
+              message: '消息发布成功',
+              type: 'success'
+            })
           }
         }).catch(error => {
           console.log(error)
         })
       },
       pushMessage () {
-        let target = this.target === 0 ? this.target : this.target.map(u => u.id)
-        this._pushMessage(target, this.editor.txt.html())
+        let target = this.target[0] === 0 ? [0] : this.target.map(u => parseInt(u.id))
+        this._pushMessage(target, this.content)
+      },
+      searchMsgHistory (s) {
+        this._debounceHistorySearch(s)
       }
     }
   }
 </script>
 
 <style scoped lang="sass">
+  .system-message-wrapper
+    padding-right: 25px
+
   .right-container
     float: right
     width: 360px
@@ -324,7 +358,11 @@
     width: 200px
     top: 10px
     right: 30px
+  .message-list-wrapper
+    margin: 0 10px
+    overflow: auto
   .message-list
+    padding: 0 20px
     li
       padding: 8px 10px 10px
       border: 1px solid rgb(209, 219, 229)
@@ -340,6 +378,9 @@
       h3
         line-height: 30px
         font-weight: bold
+      i
+        font-size: 14px
+        color: #999
       p
         line-height: 20px
         max-height: 80px

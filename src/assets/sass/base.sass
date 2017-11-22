@@ -1,3 +1,4 @@
+@import 'variables'
 ::-webkit-scrollbar
   width: 10px
   height: 10px
@@ -39,7 +40,7 @@ body
 
 .tabs-wrapper
   position: relative
-  height: 100%
+  min-height: 100%
   background-color: #fff
   overflow: auto
   .el-tabs__header
@@ -59,6 +60,16 @@ body
 .el-dialog__body
   padding: 20px
 
+.el-tabs__item.is-active
+  color: $color-purple
+
+.el-tabs__active-bar
+  background-color: $color-purple
+
 /* 富文本编辑器样式 */
-.w-e-text
-  overflow-y: auto
+.ql-snow.ql-toolbar:after,
+.ql-snow .ql-toolbar:after
+  display: none
+
+.ql-container
+  height: 300px

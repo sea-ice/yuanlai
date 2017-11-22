@@ -36,6 +36,7 @@ export function drawLine (ele, x, y) {
       }
     }]
   })
+  return myChart
 }
 
 export function drawPie (ele, d) {
@@ -57,6 +58,7 @@ export function drawPie (ele, d) {
       }))
     }]
   })
+  return myChart
 }
 
 export function drawChinaMap (ele) {
@@ -76,6 +78,7 @@ export function drawChinaMap (ele) {
       }
     }]
   })
+  return myChart
 }
 
 export function drawArc (ele, name, value) {
@@ -131,4 +134,5 @@ export function drawArc (ele, name, value) {
       }]
     }]
   })
+  return myChart
 }

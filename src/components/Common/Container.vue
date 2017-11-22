@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h2>{{ title }}</h2>
-    <main class="container-main">
+    <main class="container-main" ref="containerMain">
       <slot></slot>
     </main>
   </div>
@@ -14,7 +14,14 @@
       title: {
         type: String,
         default: ''
+      },
+      noPadding: {
+        type: Boolean,
+        default: false
       }
+    },
+    mounted () {
+      if (this.noPadding) this.$refs.containerMain.style.padding = '0'
     }
   }
 </script>

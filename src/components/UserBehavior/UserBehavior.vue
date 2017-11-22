@@ -1,242 +1,244 @@
 <template>
-  <div class="tabs-wrapper" ref="tabsWrapper">
-    <tab-panel
-      :tabs="userTabs"
-      :activeName="activeName"
-      @tab-click="handleTabClick"
-    >
-      <div class="tab" slot="lifecycle">
-        <card title="新增用户">
-          <!--<date-control title="时限" slot="widget"></date-control>-->
-          <el-select
-            v-model="addUserVal"
-            placeholder="请选择"
-            slot="widget"
-            size="mini"
-          >
-            <el-option
-              v-for="item in addUserOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-          <div class="large-chart" id="add-user-chart"></div>
-        </card>
-        <card title="用户总数">
-          <div class="large-chart" id="total-user-chart"></div>
-        </card>
-        <div class="card-columns">
-          <section>
-            <card title="活跃用户">
-              <date-control
-                topic="活跃用户"
-                :statistics="activeUsers"
-                slot="widget"
-                @date-dimension-change="handleDimensionChange"
-              ></date-control>
-              <div class="small-chart" ref="activeUserChart"></div>
-            </card>
-          </section>
-          <section>
-            <card title="留存用户">
-              <date-control
-                topic="留存用户"
-                :statistics="remainUsers"
-                slot="widget"
-                @date-dimension-change="handleDimensionChange"
-              ></date-control>
-              <div class="small-chart" ref="remainUserChart"></div>
-            </card>
-          </section>
-        </div>
-      </div>
-      <div class="tab" slot="userProperty">
-        <div class="columns-wrapper">
-          <div>
-            <div class="pie-wrapper">
-              <h2>学历</h2>
-              <div class="pie" ref="education"></div>
-            </div>
-          </div>
-          <div>
-            <div class="pie-wrapper">
-              <h2>性别</h2>
-              <div class="pie" ref="gender"></div>
-            </div>
-          </div>
-          <div>
-            <div class="pie-wrapper">
-              <h2>方向</h2>
-              <div class="pie" ref="hobby"></div>
-            </div>
+  <div class="user-behavior-wrapper">
+    <div class="tabs-wrapper" ref="tabsWrapper">
+      <tab-panel
+        :tabs="userTabs"
+        :activeName="activeName"
+        @tab-click="handleTabClick"
+      >
+        <div class="tab" slot="lifecycle">
+          <card title="新增用户">
+            <!--<date-control title="时限" slot="widget"></date-control>-->
+            <el-select
+              v-model="addUserVal"
+              placeholder="请选择"
+              slot="widget"
+              size="mini"
+            >
+              <el-option
+                v-for="item in addUserOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <div class="large-chart" id="add-user-chart"></div>
+          </card>
+          <card title="用户总数">
+            <div class="large-chart" id="total-user-chart"></div>
+          </card>
+          <div class="card-columns">
+            <section>
+              <card title="活跃用户">
+                <date-control
+                  topic="活跃用户"
+                  :statistics="activeUsers"
+                  slot="widget"
+                  @date-dimension-change="handleDimensionChange"
+                ></date-control>
+                <div class="small-chart" ref="activeUserChart"></div>
+              </card>
+            </section>
+            <section>
+              <card title="留存用户">
+                <date-control
+                  topic="留存用户"
+                  :statistics="remainUsers"
+                  slot="widget"
+                  @date-dimension-change="handleDimensionChange"
+                ></date-control>
+                <div class="small-chart" ref="remainUserChart"></div>
+              </card>
+            </section>
           </div>
         </div>
-        <card title="位置分布">
-          <div class="map-wrapper">
-            <div id="china-map" ref="chinaMap"></div>
-            <div class="province-data">
-              <h2>{{ selectProvince.name }}</h2>
-              <ul class="province-info">
-                <li>
-                  <i class="province-placeholder" :style="{backgroundImage: `url(${Images.All})`}"></i>
-                  <div class="province-statistic">
-                    <h3>用户总数</h3>
-                    <p>{{ selectProvince.totalUser.num }}</p>
-                    <p>
-                      <span>{{ selectProvince.totalUser.percentage }}</span>
-                      同比上周
-                    </p>
-                  </div>
-                </li>
-                <li>
-                  <i class="province-placeholder" :style="{backgroundImage: `url(${Images.NewUser})`}"></i>
-                  <div class="province-statistic">
-                    <h3>当天新增用户</h3>
-                    <p>{{ selectProvince.addUser.num }}</p>
-                    <p>
-                      <span>{{ selectProvince.addUser.percentage }}</span>
-                      同比上周
-                    </p>
-                  </div>
-                </li>
-                <li>
-                  <i class="province-placeholder" :style="{backgroundImage: `url(${Images.Post})`}"></i>
-                  <div class="province-statistic">
-                    <h3>当天新增帖子</h3>
-                    <p>{{ selectProvince.newArticles.num }}</p>
-                    <p>
-                      <span>{{ selectProvince.newArticles.percentage }}</span>
-                      同比上周
-                    </p>
-                  </div>
-                </li>
-              </ul>
+        <div class="tab" slot="userProperty">
+          <div class="columns-wrapper">
+            <div>
+              <div class="pie-wrapper">
+                <h2>学历</h2>
+                <div class="pie" ref="education"></div>
+              </div>
+            </div>
+            <div>
+              <div class="pie-wrapper">
+                <h2>性别</h2>
+                <div class="pie" ref="gender"></div>
+              </div>
+            </div>
+            <div>
+              <div class="pie-wrapper">
+                <h2>方向</h2>
+                <div class="pie" ref="hobby"></div>
+              </div>
             </div>
           </div>
-        </card>
-      </div>
-      <div class="tab" slot="usage">
-        <card title="标签活跃比">
-          <div class="content-wrapper">
-            <div class="total-count">
-              <div class="select-type">
-                <h2 class="type-name">{{ currentTag.name }}</h2>
-                <a href="javascript:void(0);" @click="showTagsDialog">点击更换标签</a>
-              </div>
-              <p>{{ tagStatistic.totalArticles }}次</p>
-            </div>
-            <div class="arc" ref="tagDayCountArc"></div>
-            <div class="arc" ref="tagWeekCountArc"></div>
-            <div class="arc" ref="tagMonthCountArc"></div>
-          </div>
-        </card>
-        <div class="card-columns">
-          <section>
-            <card title="求助帖活跃比">
-              <div class="content-wrapper">
-                <div class="total-count">
-                  <h2 class="type-name">求助帖</h2>
-                  <p>{{ helpArticle.totalArticles }}次</p>
-                </div>
-                <ul class="active-ratio">
-                  <li><p>日活跃比：<span>{{ helpArticle.day }}%</span></p></li>
-                  <li><p>周活跃比：<span>{{ helpArticle.week }}%</span></p></li>
-                  <li><p>月活跃比：<span>{{ helpArticle.month }}%</span></p></li>
-                </ul>
-              </div>
-            </card>
-          </section>
-          <section>
-            <card title="分享帖活跃比">
-              <div class="content-wrapper">
-                <div class="total-count">
-                  <h2 class="type-name">分享帖</h2>
-                  <p>{{ shareArticle.totalArticles }}次</p>
-                </div>
-                <ul class="active-ratio">
-                  <li><p>日活跃比：<span>{{ shareArticle.day }}%</span></p></li>
-                  <li><p>周活跃比：<span>{{ shareArticle.week }}%</span></p></li>
-                  <li><p>月活跃比：<span>{{ shareArticle.month }}%</span></p></li>
-                </ul>
-              </div>
-            </card>
-          </section>
-        </div>
-        <div class="card-columns">
-          <section>
-            <card title="互动数">
-              <date-control
-                topic="互动"
-                :statistics="interactiveUsers"
-                slot="widget"
-                @date-dimension-change="handleDimensionChange"
-              ></date-control>
-              <div class="small-chart" ref="interactiveUserChart"></div>
-            </card>
-          </section>
-          <section>
-            <card title="页面点击次数">
-              <el-table
-                :data="clickData"
-                stripe
-                style="width: 100%">
-                <el-table-column
-                  type="index"
-                  label="#"
-                  align="center"
-                  width="50">
-                </el-table-column>
-                <el-table-column
-                  prop="name"
-                  label="控件名称"
-                  align="center"
-                  width="200">
-                </el-table-column>
-                <el-table-column
-                  label="比例"
-                  align="center"
-                >
-                  <template slot-scope="scope">
-                    <div class="proportion-wrapper">
-                      <p class="proportion-indicator">{{ scope.row.percentage }}</p>
-                      <p class="proportion">
-                        <i :style="{width: `${scope.row.percentage}`}"></i>
+          <card title="位置分布">
+            <div class="map-wrapper">
+              <div id="china-map" ref="chinaMap"></div>
+              <div class="province-data">
+                <h2>{{ selectProvince.name }}</h2>
+                <ul class="province-info">
+                  <li>
+                    <i class="province-placeholder" :style="{backgroundImage: `url(${Images.All})`}"></i>
+                    <div class="province-statistic">
+                      <h3>用户总数</h3>
+                      <p>{{ selectProvince.totalUser.num }}</p>
+                      <p>
+                        <span>{{ selectProvince.totalUser.percentage }}</span>
+                        同比上周
                       </p>
                     </div>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </card>
-          </section>
+                  </li>
+                  <li>
+                    <i class="province-placeholder" :style="{backgroundImage: `url(${Images.NewUser})`}"></i>
+                    <div class="province-statistic">
+                      <h3>当天新增用户</h3>
+                      <p>{{ selectProvince.addUser.num }}</p>
+                      <p>
+                        <span>{{ selectProvince.addUser.percentage }}</span>
+                        同比上周
+                      </p>
+                    </div>
+                  </li>
+                  <li>
+                    <i class="province-placeholder" :style="{backgroundImage: `url(${Images.Post})`}"></i>
+                    <div class="province-statistic">
+                      <h3>当天新增帖子</h3>
+                      <p>{{ selectProvince.newArticles.num }}</p>
+                      <p>
+                        <span>{{ selectProvince.newArticles.percentage }}</span>
+                        同比上周
+                      </p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </card>
         </div>
-      </div>
-    </tab-panel>
-    <el-dialog
-      title="标签列表"
-      :visible.sync="tagsDialogVisible"
-      size="small"
-      :close-on-click-modal="false"
-    >
-      <div class="tags-wrapper">
-        <ul>
-          <li v-for="type in types">
-            <h4 class="tag-type-name">{{ type.name }}</h4>
-            <div class="tags">
+        <div class="tab" slot="usage">
+          <card title="标签活跃比">
+            <div class="content-wrapper">
+              <div class="total-count">
+                <div class="select-type">
+                  <h2 class="type-name">{{ currentTag.name }}</h2>
+                  <a href="javascript:void(0);" @click="showTagsDialog">点击更换标签</a>
+                </div>
+                <p>{{ tagStatistic.totalArticles }}次</p>
+              </div>
+              <div class="arc" ref="tagDayCountArc"></div>
+              <div class="arc" ref="tagWeekCountArc"></div>
+              <div class="arc" ref="tagMonthCountArc"></div>
+            </div>
+          </card>
+          <div class="card-columns">
+            <section>
+              <card title="求助帖活跃比">
+                <div class="content-wrapper">
+                  <div class="total-count">
+                    <h2 class="type-name">求助帖</h2>
+                    <p>{{ helpArticle.totalArticles }}次</p>
+                  </div>
+                  <ul class="active-ratio">
+                    <li><p>日活跃比：<span>{{ helpArticle.day }}%</span></p></li>
+                    <li><p>周活跃比：<span>{{ helpArticle.week }}%</span></p></li>
+                    <li><p>月活跃比：<span>{{ helpArticle.month }}%</span></p></li>
+                  </ul>
+                </div>
+              </card>
+            </section>
+            <section>
+              <card title="分享帖活跃比">
+                <div class="content-wrapper">
+                  <div class="total-count">
+                    <h2 class="type-name">分享帖</h2>
+                    <p>{{ shareArticle.totalArticles }}次</p>
+                  </div>
+                  <ul class="active-ratio">
+                    <li><p>日活跃比：<span>{{ shareArticle.day }}%</span></p></li>
+                    <li><p>周活跃比：<span>{{ shareArticle.week }}%</span></p></li>
+                    <li><p>月活跃比：<span>{{ shareArticle.month }}%</span></p></li>
+                  </ul>
+                </div>
+              </card>
+            </section>
+          </div>
+          <div class="card-columns">
+            <section>
+              <card title="互动数">
+                <date-control
+                  topic="互动"
+                  :statistics="interactiveUsers"
+                  slot="widget"
+                  @date-dimension-change="handleDimensionChange"
+                ></date-control>
+                <div class="small-chart" ref="interactiveUserChart"></div>
+              </card>
+            </section>
+            <section>
+              <card title="页面点击次数">
+                <el-table
+                  :data="clickData"
+                  stripe
+                  style="width: 100%">
+                  <el-table-column
+                    type="index"
+                    label="#"
+                    align="center"
+                    width="50">
+                  </el-table-column>
+                  <el-table-column
+                    prop="name"
+                    label="控件名称"
+                    align="center"
+                    width="200">
+                  </el-table-column>
+                  <el-table-column
+                    label="比例"
+                    align="center"
+                  >
+                    <template slot-scope="scope">
+                      <div class="proportion-wrapper">
+                        <p class="proportion-indicator">{{ scope.row.percentage }}</p>
+                        <p class="proportion">
+                          <i :style="{width: `${scope.row.percentage}`}"></i>
+                        </p>
+                      </div>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </card>
+            </section>
+          </div>
+        </div>
+      </tab-panel>
+      <el-dialog
+        title="标签列表"
+        :visible.sync="tagsDialogVisible"
+        size="small"
+        :close-on-click-modal="false"
+      >
+        <div class="tags-wrapper">
+          <ul>
+            <li v-for="type in types">
+              <h4 class="tag-type-name">{{ type.name }}</h4>
+              <div class="tags">
               <span
                 class="tag"
                 :class="{selected: selectedTag.id === tag.id}"
                 v-for="tag in type.tags"
                 @click="selectTag(tag)"
               >{{ tag.name }}</span>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <span slot="footer" class="dialog-footer">
+              </div>
+            </li>
+          </ul>
+        </div>
+        <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="showTagStatistic">确 定</el-button>
       </span>
-    </el-dialog>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -408,16 +410,11 @@
       this._getDayWeekMonth('/admin/main/getActiveUserNum', this.activeUsers, this.$refs.activeUserChart, '单日活跃用户数')
       this._getDayWeekMonth('/admin/main/getRemainUserNum', this.remainUsers, this.$refs.remainUserChart, '单日留存用户数')
 
-      const tabsWidth = this.$refs.tabsWrapper.clientWidth
-      const TABS_PADDING = 50 + 4
-      let pieWidth = (tabsWidth - TABS_PADDING) / 3
-      ;[].forEach.call(document.getElementsByClassName('pie'), e => {
-        e.style.width = e.style.height = `${pieWidth}px`
+      this._initPieChart()
+      window.addEventListener('resize', () => {
+        this._initPieChart()
+        this._resizeSmallLineChart()
       })
-      // 用户属性：学历
-      this._getPieData('/admin/analysis/getEducation', this.$refs.education)
-      this._getPieData('/admin/analysis/getGender', this.$refs.gender)
-      this._getPieData('/admin/analysis/getHobby', this.$refs.hobby)
       //
       drawChinaMap(document.getElementById('china-map'))
       this._getProvinceData(PROVINCE_MAP['陕西'])
@@ -621,22 +618,59 @@
         })
       },
       _drawDayWeekMonth (e, t, p, name) {
-        drawLine(e, {
+        this[t.chart] = drawLine(e, {
           data: t[p].date
         }, {
           name,
           data: t[p].num
         })
       },
-      _getPieData (url, ele) {
+      _resizeSmallLineChart () {
+        var self = this
+        var tabsWidth = this.$refs.tabsWrapper.clientWidth
+        var lineWidth = (tabsWidth - 25 - 54) / 2 - 60
+        var lineHeight = lineWidth * 3 / 4
+        let chartNames = ['activeUser', 'remainUser', 'interactiveUser']
+        ;[].forEach.call(document.getElementsByClassName('small-chart'), (e, i) => {
+          e.style.width = `${lineWidth}px`
+          e.style.height = `${lineHeight}px`
+          self[`${chartNames[i]}Chart`].resize()
+        })
+      },
+      _initPieChart () {
+        var self = this
+        var tabsWidth = this.$refs.tabsWrapper.clientWidth
+        const TABS_PADDING = 50 + 4
+        let pieWidth = (tabsWidth - TABS_PADDING) / 3
+        let pieDataUrl = [{
+          url: '/admin/analysis/getEducation',
+          dataProp: 'education'
+        }, {
+          url: '/admin/analysis/getGender',
+          dataProp: 'gender'
+        }, {
+          url: '/admin/analysis/getHobby',
+          dataProp: 'hobby'
+        }]
+        ;[].forEach.call(document.getElementsByClassName('pie'), (e, i) => {
+          e.style.width = e.style.height = `${pieWidth}px`
+          var cache = self[pieDataUrl[i].dataProp]
+          if (cache) {
+            self[`${pieDataUrl[i].dataProp}Chart`].resize()
+          } else {
+            self._getPieData(pieDataUrl[i].url, pieDataUrl[i].dataProp, e)
+          }
+        })
+      },
+      _getPieData (url, prop, ele) {
         userBehaviorApi.getData(url).then(data => {
           console.log(data)
           if (data.code === 0) {
-            var d = data.data.result.map(v => ({
+            this[prop] = data.data.result.map(v => ({
               name: v.label,
               val: v.num
             }))
-            drawPie(ele, d)
+            this[`${prop}Chart`] = drawPie(ele, this[prop])
           }
         }).catch(error => {
           console.log(error)
@@ -698,7 +732,7 @@
         })
       },
       showTagsDialog () {
-        this._getAllTags()
+        if (this.types.length === 0) this._getAllTags()
         this.selectedTag = this.currentTag
         this.tagsDialogVisible = true
       },
@@ -761,6 +795,10 @@
 <style scoped lang="sass">
   @import '../../assets/sass/mixin'
   @import '../../assets/sass/variables'
+  .user-behavior-wrapper
+    min-width: 935px
+    padding-right: 25px
+
   h2
     font-weight: bold
     text-align: center
@@ -805,10 +843,10 @@
     width: 800px
     height: 400px
     margin: 0 auto
+
   .small-chart
-    width: 450px
+    width: 400px
     height: 300px
-    margin: 0 auto
 
   .pie-wrapper
     height: 100%

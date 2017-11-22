@@ -70,7 +70,7 @@
     width: 100px
     bottom: 0px
     background-color: #fff
-    z-index: 1
+    z-index: 99
     padding-top: 20px
     li
       height: 100px
