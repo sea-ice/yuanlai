@@ -70,29 +70,31 @@ let router = new Router({
   ]
 })
 
-let userValidated = false
-let userValid = false
+// let userValidated = false
+// let userValid = false
 router.beforeEach((to, from, next) => {
   if (to.path === '/login') return next()
-  if (!userValidated) {
-    userValidated = true
-    let userId = Storage.getLocalStorage('__USER_ID__')
-    let token = Storage.getLocalStorage('__USER_TOKEN__')
-    if (userId && token) {
-      LoginApi.checkToken(userId, token).then(response => {
-        console.log(response)
-        if (response.code === 0) {
-          userValid = true
-          next()
-        } else {
-          next('/login')
-        }
-      })
-    } else {
-      next('/login')
-    }
+  let userValid = JSON.parse(Storage.getSessionStorage('__USER_VALID__'))
+  if (userValid === true) return next()
+  let userInfo = JSON.parse(Storage.getLocalStorage('__VALID_USER_INFO__'))
+  if (!userInfo) return next('/login')
+  let {userId, token, avatar, nickName} = userInfo
+  if (userId && token && avatar && nickName) {
+    LoginApi.checkToken(userId, token).then(response => {
+      // 测试阶段暂时跳过检查，予以放行
+      debugger
+      Storage.getSessionStorage('__USER_VALID__', true)
+      next()
+      // 线上环境要注释掉上面两行
+      // if (response.code === 0) {
+      //   next()
+      // } else {
+      //   Storage.removeStorageItem('__VALID_USER_INFO__')
+      //   next('/login')
+      // }
+    })
   } else {
-    if (userValid) return next()
+    Storage.removeStorageItem('__VALID_USER_INFO__')
     next('/login')
   }
 })

@@ -4,6 +4,7 @@
       :label="tab.label"
       :name="tab.name"
       v-for="tab in tabs"
+      :key="tab.name"
     >
       <slot :name="tab.name"></slot>
     </el-tab-pane>

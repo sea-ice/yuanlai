@@ -36,11 +36,14 @@
   export default {
     name: 'LoginPage',
     mounted () {
-      window.particlesJS.load('particles-js', 'http://localhost:8081/static/json/particles-data.json')
+      window.particlesJS.load('particles-js', '/static/json/particles-data.json')
       if (this.loginned) {
-        setInterval(() => {
+        let timer = setInterval(() => {
           this.count--
           if (this.count === 0) {
+            clearInterval(timer)
+            // 重置count
+            this.count = 5
             this.$router.replace({
               path: '/'
             })
@@ -51,7 +54,7 @@
     data () {
       return {
         login: {},
-        loginned: false,
+        loginned: JSON.parse(Storage.getSessionStorage('__USER_VALID__')),
         count: 5
       }
     },
@@ -61,19 +64,24 @@
         if (!this.login.password) return this.$message.error('登录密码不允许为空！')
         LoginApi.login(this.login.name, this.login.password).then(response => {
           console.log(response)
-          if (response.status.code === 0) {
-            Storage.getLocalStorage('__USER_ID__')
-            Storage.getLocalStorage('__USER_TOKEN__')
+          if (response.code === 0) {
+            Storage.getLocalStorage('__VALID_USER_INFO__', JSON.stringify({
+              userId: response.data.userId,
+              nickName: response.data.nickName,
+              avatar: response.data.avator,
+              token: response.data.token
+            }))
             this.$message({
               type: 'success',
               message: '登录成功！'
             })
+            Storage.getSessionStorage('__USER_VALID__', true)
             setTimeout(() => {
               this.$router.replace({
                 path: '/'
               })
             }, 2000)
-          } else if (response.status.code === -1) {
+          } else {
             this.$message({
               type: 'error',
               message: '用户名或者密码错误！'
