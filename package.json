@@ -15,9 +15,11 @@
     "echarts": "^3.7.2",
     "element-ui": "^1.4.9",
     "moment": "^2.19.1",
+    "particles.js": "^2.0.0",
     "vue": "^2.5.2",
     "vue-quill-editor": "^2.3.3",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

@@ -225,7 +225,7 @@
         })
       },
       pushMessage () {
-        let target = this.target[0] === 0 ? [0] : this.target.map(u => parseInt(u.id))
+        let target = this.target[0] === 0 ? '0' : this.target.map(u => parseInt(u.id)).join(',')
         this._pushMessage(target, this.content)
       },
       searchMsgHistory (s) {
