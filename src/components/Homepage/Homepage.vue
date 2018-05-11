@@ -28,12 +28,18 @@
       <container title="热门标签 TOP10">
         <div class="tags-wrapper">
           <!--<el-tag color="#E9FAF0">{{ label }}</el-tag>-->
-          <span v-for="label in hotLabels" class="tag">{{ label }}</span>
+          <span
+            v-for="(label, i) in hotLabels" class="tag"
+            :key="i"
+          >{{ label }}</span>
         </div>
       </container>
       <container title="热门帖子 TOP10">
         <ul class="post-list">
-          <li v-for="(article, i) in hotArticles">
+          <li
+            v-for="(article, i) in hotArticles"
+            :key="i"
+          >
             <i class="top-rank">{{ i + 1 }}</i>
             <h3>{{ article.title }}</h3>
             <p class="post-content">{{ article.content }}</p>
@@ -42,10 +48,13 @@
             <!--</ul>-->
             <p class="post-time">
               by
-              <i :style="{backgroundImage: `url(${article.avator})`}"></i>&nbsp;
+              <i
+                v-if="article.avator"
+                :style="{backgroundImage: `url(${article.avator})`}"
+              ></i>&nbsp;
               <span class="user-nickname">{{ article.nickName }}</span>
               at
-              <time>{{ article.time }}</time>
+              <time>{{ article.time | timeFormat }}</time>
             </p>
             <div class="bottom-border"></div>
           </li>
@@ -56,12 +65,18 @@
 </template>
 
 <script>
+  import dayjs from 'dayjs'
   import Container from '@/components/Common/Container'
   import * as homepageApi from '@/api/homepage'
   export default {
     name: 'Homepage',
     components: {
       Container
+    },
+    filters: {
+      timeFormat (val) {
+        return dayjs(Number(val)).format('YYYY年MM月DD日 HH:mm')
+      }
     },
     mounted () {
       this.$refs.homepageContainer.parentNode.style.height = 'auto'

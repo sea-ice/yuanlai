@@ -19,7 +19,7 @@ export default {
   },
   computed: {
     activeUrl () {
-      const urls = ['/system', '/user', '/feedback', '/report']
+      const urls = ['/post', '/system', '/user', '/feedback', '/report']
       var currentPath = this.$route.path
       var filter = urls.filter(url => currentPath.match(new RegExp(url)))
       return filter.length ? filter[0] : '/'

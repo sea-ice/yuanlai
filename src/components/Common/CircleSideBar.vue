@@ -1,12 +1,16 @@
 <template>
   <ul class="nav-menu">
-    <li :class="{active: activeUrl === item.url}" v-for="item in menu">
+    <li
+      v-for="(item, index) in menu"
+      :class="{active: activeUrl === item.url}"
+      :key="index"
+    >
       <a
         href="javascript:void(0)"
         :data-url="item.url"
         @click="togglePage"
       >
-        <i></i>
+        <i :class="(activeUrl === item.url) ? item.activeIcon : item.icon"></i>
         <p :style="{marginTop: `${item.m}px`}">{{ item.title }}</p>
       </a>
     </li>
@@ -28,21 +32,37 @@
         menu: [{
           title: '首页',
           url: '/',
+          icon: 'homepage-icon',
+          activeIcon: 'homepage-active-icon',
           m: -2
         }, {
+          title: '帖子管理',
+          icon: 'feedback-icon',
+          activeIcon: 'feedback-active-icon',
+          url: '/post',
+          m: 2
+        }, {
           title: '系统消息',
+          icon: 'message-icon',
+          activeIcon: 'message-active-icon',
           url: '/system',
           m: 2
         }, {
           title: '用户行为',
+          icon: 'user-icon',
+          activeIcon: 'user-active-icon',
           url: '/user',
           m: 0
         }, {
           title: '反馈管理',
+          icon: 'feedback-icon',
+          activeIcon: 'feedback-active-icon',
           url: '/feedback',
           m: 2
         }, {
           title: '举报管理',
+          icon: 'report-icon',
+          activeIcon: 'report-active-icon',
           url: '/report',
           m: 0
         }]
@@ -70,40 +90,30 @@
     li
       height: 100px
       text-align: center
-      &:nth-child(1)
-        i
-          background-image: url(../../assets/images/homepage.png)
-      &:nth-child(2)
-        i
-          background-image: url(../../assets/images/message.png)
-      &:nth-child(3)
-        i
-          background-image: url(../../assets/images/user.png)
-      &:nth-child(4)
-        i
-          background-image: url(../../assets/images/feedback.png)
-      &:nth-child(5)
-        i
-          background-image: url(../../assets/images/report.png)
+      .homepage-icon
+        background-image: url(../../assets/images/homepage.png)
+      .homepage-active-icon
+        background-image: url(../../assets/images/homepage_active.png)
+      .feedback-icon
+        background-image: url(../../assets/images/feedback.png)
+      .feedback-active-icon
+        background-image: url(../../assets/images/feedback_active.png)
+      .message-icon
+        background-image: url(../../assets/images/message.png)
+      .message-active-icon
+        background-image: url(../../assets/images/message_active.png)
+      .user-icon
+        background-image: url(../../assets/images/user.png)
+      .user-active-icon
+        background-image: url(../../assets/images/user_active.png)
+      .report-icon
+        background-image: url(../../assets/images/report.png)
+      .report-active-icon
+        background-image: url(../../assets/images/report_active.png)
       &.active
         i
           width: 40px
           height: 40px
-        &:nth-child(1)
-          i
-            background-image: url(../../assets/images/homepage_active.png)
-        &:nth-child(2)
-          i
-            background-image: url(../../assets/images/message_active.png)
-        &:nth-child(3)
-          i
-            background-image: url(../../assets/images/user_active.png)
-        &:nth-child(4)
-          i
-            background-image: url(../../assets/images/feedback_active.png)
-        &:nth-child(5)
-          i
-            background-image: url(../../assets/images/report_active.png)
         p
           color: rgb(98, 85, 215)
       a
@@ -142,7 +152,7 @@
       -ms-transition: top .3s ease-in-out
       -o-transition: top .3s ease-in-out
       transition: top .3s ease-in-out
-  @for $i from 1 through 5
+  @for $i from 1 through 6
     .active:nth-of-type(#{$i}) ~ .indicator
       top: 42px + 100px * ($i - 1)
 </style>

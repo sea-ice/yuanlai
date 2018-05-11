@@ -3,6 +3,8 @@ import axios from 'axios'
 // import $ from 'jquery'
 
 export function login (username, password) {
+  console.log(username)
+  console.log(password)
   return axios.post(`${PROXY_URL}${URL_PREFIX}/tokens/login`, {
     username,
     password

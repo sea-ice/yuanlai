@@ -9,6 +9,12 @@ const Homepage = (resolve) => {
   })
 }
 
+const PostManage = (resolve) => {
+  import('@/components/PostManage/PostManage').then((module) => {
+    resolve(module)
+  })
+}
+
 const SystemMessage = (resolve) => {
   import('@/components/SystemMessage/SystemMessage').then((module) => {
     resolve(module)
@@ -46,6 +52,10 @@ let router = new Router({
     {
       path: '/',
       component: Homepage
+    },
+    {
+      path: '/post',
+      component: PostManage
     },
     {
       path: '/system',
